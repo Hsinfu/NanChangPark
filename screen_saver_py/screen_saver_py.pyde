@@ -167,3 +167,10 @@ def mousePressed():
 
 def mouseReleased():
     noLoop()  # Releasing the mouse stops looping draw()
+
+def keyPressed():
+    # print("pressed %s %d" % (key, keyCode))
+    pg1.save('layers/img_layer.png')
+    pg2.save('layers/line_layer.png')
+
+
