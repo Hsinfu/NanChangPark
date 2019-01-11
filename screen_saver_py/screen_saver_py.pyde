@@ -24,10 +24,12 @@ def connect(o1, o2, max_num=5):
     s2 = set(o2.img.pixels)
     ss = s1.intersection(s2)
     l = int(random(max_num))
-    for c in list(ss)[:1]:
+    ss = sorted(ss, key=lambda x: random(1))
+    # print('zzz', l, len(ss))
+    for c in list(ss)[:l]:
         o1_coord = getColorIdx(o1.img, c)
         o2_coord = getColorIdx(o2.img, c)
-        connects.append((o1, o1_coord, o2, o2_coord))
+        connects.append((c, o1, o1_coord, o2, o2_coord))
 
 
 class MovingObject:
@@ -96,11 +98,10 @@ class Map:
         pg1.endDraw()
         image(pg1, 0, 0)
         pg2.beginDraw()
-        # pg2.clear()
+        pg2.clear()
         for con in connects:
-            o1, o1_coord, o2, o2_coord = con
-
-            # pg2.stroke(255)
+            c, o1, o1_coord, o2, o2_coord = con
+            pg2.stroke(c)
             pg2.line(
                 o1.x + o1_coord[1],
                 o1.y + o1_coord[0],
@@ -157,6 +158,26 @@ def setup():
     img.resize(w, h)
     my_map.add_point(MovingObject(img))
 
+    # add man04.png
+    img = loadImage("img/man04.png")
+    img.resize(w, h)
+    my_map.add_point(MovingObject(img))
+
+    # add man05.png
+    img = loadImage("img/man05.png")
+    img.resize(w, h)
+    my_map.add_point(MovingObject(img))
+
+    # add man06.png
+    img = loadImage("img/man06.png")
+    img.resize(w, h)
+    my_map.add_point(MovingObject(img))
+
+    # add man07.png
+    img = loadImage("img/man07.png")
+    img.resize(w, h)
+    my_map.add_point(MovingObject(img))
+
     noLoop()  # draw() will not loop
 
 def draw():
@@ -172,5 +193,3 @@ def keyPressed():
     # print("pressed %s %d" % (key, keyCode))
     pg1.save('layers/img_layer.png')
     pg2.save('layers/line_layer.png')
-
-
