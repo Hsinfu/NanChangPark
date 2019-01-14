@@ -6,11 +6,6 @@ def intersect(o1, o2):
     r2 = {'top': o2.y + o2.img.height, 'bottom': o2.y, 'left': o2.x, 'right': o2.x + o2.img.width}
     return not (r1['right'] < r2['left'] or r1['left'] > r2['right'] or r1['top'] < r2['bottom'] or r1['bottom'] > r2['top'])
 
-def reverse(o):
-    o.vx *= -1
-    o.vy *= -1
-
-
 def getColorIdx(img, c):
     for h in range(img.height):
         for w in range(img.width):
@@ -123,15 +118,15 @@ class Map:
         points = [p for p in self.points]
         while len(points) > 0:
             p = points.pop()
-            inter = False
             for pi in points:
                 if intersect(p, pi):
-                    reverse(pi)
+                    vxm = 1 if pi.vx*p.vx > 0 else -1
+                    vym = 1 if pi.vy*p.vy > 0 else -1
+                    pi.vx *= vxm
+                    pi.vy *= vym
+                    p.vx *= vxm
+                    p.vy *= vym
                     connect(p, pi)
-                    inter = True
-            if inter:
-                reverse(p)
-
 
     def next_draw(self):
         self.next()
