@@ -12,6 +12,41 @@ def getColorIdx(img, c):
             if img.pixels[h*img.width+w] == c:
                 return h, w
 
+
+def get_vxm_vym(o1, o2):
+    if o1.pre_x > o2.pre_x:
+        x_dist = o1.pre_x - o2.pre_x - o2.img.width
+    else:
+        x_dist = o2.pre_x - o1.pre_x - o1.img.width
+
+    if o1.pre_y > o2.pre_y:
+        y_dist = o1.pre_y - o2.pre_y - o2.img.height
+    else:
+        y_dist = o2.pre_y - o1.pre_y - o1.img.height
+
+
+    if x_dist < 0:
+        return 1, -1
+
+    if y_dist < 0:
+        return -1, 1
+
+    x_speed = abs(o1.pre_vx - o2.pre_vx)
+    y_speed = abs(o1.pre_vy - o2.pre_vy)
+
+    if x_speed == 0:
+        return 1, -1
+    if y_speed == 0:
+        return -1, 1
+
+    x_time = x_dist / x_speed
+    y_time = y_dist / y_speed
+
+    if x_time > y_time:
+        return -1, 1
+    return 1, -1
+
+
 connects = []
 
 def connect(o1, o2, max_num=5):
@@ -31,6 +66,10 @@ class MovingObject:
     speed = 5
 
     def __init__(self, img):
+        self.pre_x = 0
+        self.pre_y = 0
+        self.pre_vx = 0
+        self.pre_vy = 0
         self.img = img
         self.x_l = width - self.img.width
         self.y_l = height - self.img.height
@@ -40,6 +79,8 @@ class MovingObject:
     def init_location(self):
         self.x = random(self.x_l)
         self.y = random(self.y_l)
+        self.pre_x = self.x
+        self.pre_y = self.y
 
     def init_speed(self):
         w, h = self.img.width, self.img.height
@@ -48,8 +89,14 @@ class MovingObject:
         self.vx = self.speed * random_positive_negative() * w / l
         self.vy = self.speed * random_positive_negative() * h / l
         # print('init vx:{}, vy:{}'.format(self.vx, self.vy))
+        self.pre_vx = self.vx
+        self.pre_vy = self.vy
 
     def next(self):
+        self.pre_x = self.x
+        self.pre_y = self.y
+        self.pre_vx = self.vx
+        self.pre_vy = self.vy
         self.x += self.vx
         self.y += self.vy
 
@@ -122,6 +169,8 @@ class Map:
                 if intersect(p, pi):
                     vxm = 1 if pi.vx*p.vx > 0 else -1
                     vym = 1 if pi.vy*p.vy > 0 else -1
+                    if vxm == -1 and vym == -1:
+                        vxm, vym = get_vxm_vym(p, pi)
                     pi.vx *= vxm
                     pi.vy *= vym
                     p.vx *= vxm
