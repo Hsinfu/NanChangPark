@@ -82,7 +82,15 @@ class Map:
     def __init__(self):
         self.points = []
 
+    def check_init_location_ok(self, p):
+        for _p in self.points:
+            if intersect(p, _p):
+                return False
+        return True
+
     def add_point(self, p):
+        while not self.check_init_location_ok(p):
+            p.init_location()
         self.points.append(p)
 
     def next(self):
