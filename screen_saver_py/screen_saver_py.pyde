@@ -1,7 +1,7 @@
 
 window_width, window_height = 1200, 800
 map_x, map_y, map_width, map_height = 500, 100, 600, 600
-
+obj_width, obj_height = 32, 44
 
 def random_positive_negative():
     return 1 if random(1) > 0.5 else -1
@@ -185,10 +185,7 @@ class Map:
             p = points.pop()
             for pi in points:
                 if intersect(p, pi):
-                    vxm = 1 if pi.vx*p.vx > 0 else -1
-                    vym = 1 if pi.vy*p.vy > 0 else -1
-                    if vxm == -1 and vym == -1:
-                        vxm, vym = get_vxm_vym(p, pi)
+                    vxm, vym = get_vxm_vym(p, pi)
                     pi.vx *= vxm
                     pi.vy *= vym
                     p.vx *= vxm
@@ -217,7 +214,7 @@ def setup():
     my_map.add_bg(bg_img)
 
     # add users
-    w, h = 96, 132
+    w, h = obj_width, obj_height
 
     # add man01.png
     img = loadImage("img/man01.png")
