@@ -1,6 +1,6 @@
 
-window_width, window_height = 1200, 1000
-map_x, map_y, map_width, map_height = 300, 100, 800, 800
+window_width, window_height = 1200, 800
+map_x, map_y, map_width, map_height = 500, 100, 600, 600
 
 
 def random_positive_negative():
@@ -140,14 +140,27 @@ class Map:
             p.init_location()
         self.points.append(p)
 
+    def add_bg(self, bg_img):
+        self.bg_img = bg_img
+        print(bg_img.width, bg_img.height)
+
     def next(self):
         for p in self.points:
             p.next()
         self.hit_rebound()
 
     def draw(self):
+        rect(map_x-1, map_y-1, map_width+1, map_height+1)
+
+        pg0.beginDraw()
+        pg0.clear()
+        pg0.background(204)
+        pg0.image(self.bg_img, 0, 0)
+        pg0.endDraw()
+        image(pg0, map_x, map_y)
+
         pg1.beginDraw()
-        pg1.background(204)
+        pg1.clear()
         for p in self.points:
             pg1.image(p.img, p.x, p.y)
         pg1.endDraw()
@@ -193,10 +206,17 @@ my_map = Map()
 def setup():
     size(window_width, window_height)
 
-    global pg1, pg2
+    global pg0, pg1, pg2
+    pg0 = createGraphics(map_width, map_height)
     pg1 = createGraphics(map_width, map_height)
     pg2 = createGraphics(map_width, map_height)
 
+    # add back ground image
+    bg_img = loadImage("img/map_background.png")
+    bg_img.resize(map_width, map_height)
+    my_map.add_bg(bg_img)
+
+    # add users
     w, h = 96, 132
 
     # add man01.png
