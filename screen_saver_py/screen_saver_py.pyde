@@ -1,3 +1,8 @@
+
+window_width, window_height = 1200, 1000
+map_x, map_y, map_width, map_height = 300, 100, 800, 800
+
+
 def random_positive_negative():
     return 1 if random(1) > 0.5 else -1
 
@@ -71,8 +76,8 @@ class MovingObject:
         self.pre_vx = 0
         self.pre_vy = 0
         self.img = img
-        self.x_l = width - self.img.width
-        self.y_l = height - self.img.height
+        self.x_l = pg1.width - self.img.width
+        self.y_l = pg1.height - self.img.height
         self.init_location()
         self.init_speed()
 
@@ -146,7 +151,7 @@ class Map:
         for p in self.points:
             pg1.image(p.img, p.x, p.y)
         pg1.endDraw()
-        image(pg1, 0, 0)
+        image(pg1, map_x, map_y)
         pg2.beginDraw()
         pg2.clear()
         for con in connects:
@@ -159,7 +164,7 @@ class Map:
                 o2.y + o2_coord[0],
             )
         pg2.endDraw()
-        image(pg2, 0, 0)
+        image(pg2, map_x, map_y)
 
     def hit_rebound(self):
         points = [p for p in self.points]
@@ -183,15 +188,14 @@ class Map:
 
 
 my_map = Map()
-window_width, window_height = 800, 800
 
 
 def setup():
     size(window_width, window_height)
 
     global pg1, pg2
-    pg1 = createGraphics(window_width, window_height)
-    pg2 = createGraphics(window_width, window_height)
+    pg1 = createGraphics(map_width, map_height)
+    pg2 = createGraphics(map_width, map_height)
 
     w, h = 96, 132
 
