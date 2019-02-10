@@ -1,5 +1,5 @@
 
-max_connect = 2
+max_connection = 2
 speed = 5
 window_width, window_height = 1200, 800
 map_x, map_y, map_width, map_height = 500, 100, 600, 600
@@ -32,7 +32,7 @@ def getColorIdx(img, c):
                 return h, w
 
 
-def get_vxm_vym(o1, o2):
+def get_v_rebound(o1, o2):
     if o1.pre_x > o2.pre_x:
         x_dist = o1.pre_x - o2.pre_x - o2.img.width
     else:
@@ -44,34 +44,34 @@ def get_vxm_vym(o1, o2):
         y_dist = o2.pre_y - o1.pre_y - o1.img.height
 
     if x_dist < 0 and y_dist < 0:
-        print('get_vxm_vym both dist < 0')
+        print('get_v_rebound both dist < 0')
         print('o1 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(o1.pre_x, o1.pre_y, o1.pre_vx, o1.pre_vy, o1.x, o1.y, o1.vx, o1.vy))
         print('o2 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(o2.pre_x, o2.pre_y, o2.pre_vx, o2.pre_vy, o2.x, o2.y, o2.vx, o2.vy))
 
 
     if x_dist < 0:
-        return 1, -1
+        return False, True
 
     if y_dist < 0:
-        return -1, 1
+        return True, False
 
     x_speed = abs(o1.pre_vx - o2.pre_vx)
     y_speed = abs(o1.pre_vy - o2.pre_vy)
 
     if x_speed == 0:
-        return 1, -1
+        return False, True
     if y_speed == 0:
-        return -1, 1
+        return True, False
 
     x_time = x_dist / x_speed
     y_time = y_dist / y_speed
 
-    print('get_vxm_vym both dist >= 0')
+    print('get_v_rebound both dist >= 0')
     print('o1 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(o1.pre_x, o1.pre_y, o1.pre_vx, o1.pre_vy, o1.x, o1.y, o1.vx, o1.vy))
     print('o2 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(o2.pre_x, o2.pre_y, o2.pre_vx, o2.pre_vy, o2.x, o2.y, o2.vx, o2.vy))
     if x_time > y_time:
-        return -1, 1
-    return 1, -1
+        return True, False
+    return False, True
 
 
 connect_num = {}
@@ -88,7 +88,7 @@ def connect(o1, o2, max_num=5):
         o1_coord = getColorIdx(o1.img, c)
         o2_coord = getColorIdx(o2.img, c)
         n = connect_num.get((o1, o2), 0)
-        if n < max_connect:
+        if n < max_connection:
             connects.append((c, o1, o1_coord, o2, o2_coord))
             connect_num[(o1, o2)] = n + 1
 
@@ -98,6 +98,8 @@ class MovingObject:
         self.pre_y = 0
         self.pre_vx = 0
         self.pre_vy = 0
+        self.vx_rebound = False
+        self.vy_rebound = False
         self.img = img
         self.x_l = pg1.width - self.img.width
         self.y_l = pg1.height - self.img.height
@@ -150,6 +152,20 @@ class MovingObject:
 
         return self.x, self.y
 
+    def set_vx_rebound(self):
+        self.vx_rebound = True
+
+    def set_vy_rebound(self):
+        self.vy_rebound = True
+
+    def apply_rebound(self):
+        if self.vx_rebound:
+            self.vx *= -1
+            self.vx_rebound = False
+        if self.vy_rebound:
+            self.vy *= -1
+            self.vy_rebound = False
+
 
 class Map:
 
@@ -162,7 +178,7 @@ class Map:
                 return True
         return False
 
-    def get_vxm_vym_bg(self, p):
+    def get_v_rebound_bg(self, p):
         print('p (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p.pre_x, p.pre_y, p.pre_vx, p.pre_vy, p.x, p.y, p.vx, p.vy))
 
         b = get_box(p)
@@ -204,14 +220,14 @@ class Map:
             y_dist = p.pre_y - y_collision
 
         if x_dist < 0 and y_dist < 0:
-            return -1, -1
+            return True, True
             print('both dist < 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}), pre_v: ({}, {})'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist, p.pre_vx, p.pre_vy))
 
         if x_dist < 0:
-            return 1, -1
+            return False, True
 
         if y_dist < 0:
-            return -1, 1
+            return True, False
 
         x_time = x_dist / abs(p.pre_vx)
         y_time = y_dist / abs(p.pre_vy)
@@ -219,8 +235,8 @@ class Map:
         print('both dist >= 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}), pre_v: ({}, {}), time: ({}, {})'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist, p.pre_vx, p.pre_vy, x_time, y_time))
 
         if x_time > y_time:
-            return -1, 1
-        return 1, -1
+            return True, False
+        return False, True
 
     def is_overlap_bg(self, p):
         b = get_box(p)
@@ -252,6 +268,7 @@ class Map:
             p.next()
         self.hit_rebound()
         self.hit_rebound_bg()
+        self.apply_rebound()
 
     def draw(self):
         pg0.beginDraw()
@@ -287,23 +304,32 @@ class Map:
             p = points.pop()
             for pi in points:
                 if intersect(p, pi):
-                    vxm, vym = get_vxm_vym(p, pi)
-                    pi.vx *= vxm
-                    pi.vy *= vym
-                    p.vx *= vxm
-                    p.vy *= vym
+                    vx_re, vy_re = get_v_rebound(p, pi)
+                    if vx_re:
+                        pi.set_vx_rebound()
+                        p.set_vx_rebound()
+                    if vy_re:
+                        pi.set_vy_rebound()
+                        p.set_vy_rebound()
                     connect(p, pi)
 
     def hit_rebound_bg(self):
         for p in self.points:
             if self.is_overlap_bg(p):
-                vxm, vym = self.get_vxm_vym_bg(p)
-                p.vx *= vxm
-                p.vy *= vym
+                vx_re, vy_re = self.get_v_rebound_bg(p)
+                if vx_re:
+                    p.set_vx_rebound()
+                if vy_re:
+                    p.set_vy_rebound()
+
+    def apply_rebound(self):
+        for p in self.points:
+            p.apply_rebound()
 
     def next_draw(self):
         self.draw()
         self.next()
+
 
 my_map = Map()
 
