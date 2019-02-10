@@ -3,12 +3,24 @@ window_width, window_height = 1200, 800
 map_x, map_y, map_width, map_height = 500, 100, 600, 600
 obj_width, obj_height = 32, 44
 
+# black_colors = [
+#     -14477291,
+# ]
+
+blank_colors = [
+    0,
+    16777215,
+]
+
 def random_positive_negative():
     return 1 if random(1) > 0.5 else -1
 
+def get_box(o):
+    return {'top': o.y + o.img.height, 'bottom': o.y, 'left': o.x, 'right': o.x + o.img.width}
+
 def intersect(o1, o2):
-    r1 = {'top': o1.y + o1.img.height, 'bottom': o1.y, 'left': o1.x, 'right': o1.x + o1.img.width}
-    r2 = {'top': o2.y + o2.img.height, 'bottom': o2.y, 'left': o2.x, 'right': o2.x + o2.img.width}
+    r1 = get_box(o1)
+    r2 = get_box(o2)
     return not (r1['right'] < r2['left'] or r1['left'] > r2['right'] or r1['top'] < r2['bottom'] or r1['bottom'] > r2['top'])
 
 def getColorIdx(img, c):
@@ -129,10 +141,25 @@ class Map:
     def __init__(self):
         self.points = []
 
-    def check_init_location_ok(self, p):
+    def is_overlap_other_points(self, p):
         for _p in self.points:
             if intersect(p, _p):
-                return False
+                return True
+        return False
+
+    def is_overlap_bg(self, p):
+        b = get_box(p)
+        for wi in range(floor(b['left']), ceil(b['right'])):
+            for hi in range(floor(b['bottom']), ceil(b['top'])):
+                if self.blank_map[wi][hi] == 0:
+                    return True
+        return False
+
+    def check_init_location_ok(self, p):
+        if self.is_overlap_other_points(p):
+            return False
+        if self.is_overlap_bg(p):
+            return False
         return True
 
     def add_point(self, p):
@@ -142,7 +169,7 @@ class Map:
 
     def add_bg(self, bg_img):
         self.bg_img = bg_img
-        print(bg_img.width, bg_img.height)
+        self.blank_map = [[1 if bg_img.get(wi, hi) in blank_colors else 0 for hi in range(bg_img.height)] for wi in range(bg_img.width)]
 
     def next(self):
         for p in self.points:
@@ -211,6 +238,15 @@ def setup():
     # add back ground image
     bg_img = loadImage("img/map_background.png")
     bg_img.resize(map_width, map_height)
+
+    pxls = {}
+    for p in bg_img.pixels:
+        pxls[p] = 1 if p not in pxls else pxls[p] + 1
+
+    p_most = max(pxls.iteritems(), key=lambda i: i[1])[0]
+    print('bg_img pixel {} with the most num: {}'.format(p_most, pxls[p_most]))
+    print('bg_img pixels', pxls)  # all pixels
+    print('bg_img width {} height {}'.format(bg_img.width, bg_img.height))
     my_map.add_bg(bg_img)
 
     # add users
