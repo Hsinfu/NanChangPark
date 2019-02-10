@@ -1,4 +1,6 @@
 
+max_connect = 2
+speed = 5
 window_width, window_height = 1200, 800
 map_x, map_y, map_width, map_height = 500, 100, 600, 600
 obj_width, obj_height = 32, 44
@@ -41,16 +43,16 @@ def get_vxm_vym(o1, o2):
     else:
         y_dist = o2.pre_y - o1.pre_y - o1.img.height
 
-    if x_dist <= 0 and y_dist <= 0:
-        print('get_vxm_vym both dist <= 0')
+    if x_dist < 0 and y_dist < 0:
+        print('get_vxm_vym both dist < 0')
         print('o1 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(o1.pre_x, o1.pre_y, o1.pre_vx, o1.pre_vy, o1.x, o1.y, o1.vx, o1.vy))
         print('o2 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(o2.pre_x, o2.pre_y, o2.pre_vx, o2.pre_vy, o2.x, o2.y, o2.vx, o2.vy))
 
 
-    if x_dist <= 0:
+    if x_dist < 0:
         return 1, -1
 
-    if y_dist <= 0:
+    if y_dist < 0:
         return -1, 1
 
     x_speed = abs(o1.pre_vx - o2.pre_vx)
@@ -64,7 +66,7 @@ def get_vxm_vym(o1, o2):
     x_time = x_dist / x_speed
     y_time = y_dist / y_speed
 
-    print('get_vxm_vym both dist > 0')
+    print('get_vxm_vym both dist >= 0')
     print('o1 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(o1.pre_x, o1.pre_y, o1.pre_vx, o1.pre_vy, o1.x, o1.y, o1.vx, o1.vy))
     print('o2 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(o2.pre_x, o2.pre_y, o2.pre_vx, o2.pre_vy, o2.x, o2.y, o2.vx, o2.vy))
     if x_time > y_time:
@@ -72,6 +74,7 @@ def get_vxm_vym(o1, o2):
     return 1, -1
 
 
+connect_num = {}
 connects = []
 
 def connect(o1, o2, max_num=5):
@@ -84,12 +87,12 @@ def connect(o1, o2, max_num=5):
     for c in list(ss)[:l]:
         o1_coord = getColorIdx(o1.img, c)
         o2_coord = getColorIdx(o2.img, c)
-        connects.append((c, o1, o1_coord, o2, o2_coord))
-
+        n = connect_num.get((o1, o2), 0)
+        if n < max_connect:
+            connects.append((c, o1, o1_coord, o2, o2_coord))
+            connect_num[(o1, o2)] = n + 1
 
 class MovingObject:
-    speed = 5
-
     def __init__(self, img):
         self.pre_x = 0
         self.pre_y = 0
@@ -104,6 +107,8 @@ class MovingObject:
     def init_location(self):
         self.x = floor(random(self.x_l))
         self.y = floor(random(self.y_l))
+        # self.x = 186 # floor(random(self.x_l))
+        # self.y = 276 # floor(random(self.y_l))
         self.pre_x = self.x
         self.pre_y = self.y
 
@@ -111,8 +116,10 @@ class MovingObject:
         w, h = self.img.width, self.img.height
         l = sqrt(w * w + h * h)
         # print(int(random(1)))
-        self.vx = self.speed * random_positive_negative() * w / l
-        self.vy = self.speed * random_positive_negative() * h / l
+        # self.vx = speed * 1 * w / l
+        # self.vy = speed * -1 * h / l
+        self.vx = speed * random_positive_negative() * w / l
+        self.vy = speed * random_positive_negative() * h / l
         # print('init vx:{}, vy:{}'.format(self.vx, self.vy))
         self.pre_vx = self.vx
         self.pre_vy = self.vy
@@ -156,6 +163,8 @@ class Map:
         return False
 
     def get_vxm_vym_bg(self, p):
+        print('p (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p.pre_x, p.pre_y, p.pre_vx, p.pre_vy, p.x, p.y, p.vx, p.vy))
+
         b = get_box(p)
 
         def get_w_overlap(t='left'):
@@ -194,23 +203,24 @@ class Map:
         else:
             y_dist = p.pre_y - y_collision
 
-        if x_dist <= 0 and y_dist <= 0:
-            print('both dist <= 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}), pre_v: ({}, {})'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist, p.pre_vx, p.pre_vy))
+        if x_dist < 0 and y_dist < 0:
+            return -1, -1
+            print('both dist < 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}), pre_v: ({}, {})'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist, p.pre_vx, p.pre_vy))
 
-        if x_dist <= 0:
+        if x_dist < 0:
             return 1, -1
 
-        if y_dist <= 0:
+        if y_dist < 0:
             return -1, 1
 
         x_time = x_dist / abs(p.pre_vx)
         y_time = y_dist / abs(p.pre_vy)
 
-        print('both dist > 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}), pre_v: ({}, {}), time: ({}, {})'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist, p.pre_vx, p.pre_vy, x_time, y_time))
+        print('both dist >= 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}), pre_v: ({}, {}), time: ({}, {})'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist, p.pre_vx, p.pre_vy, x_time, y_time))
 
         if x_time > y_time:
-            return 1, -1
-        return -1, 1
+            return -1, 1
+        return 1, -1
 
     def is_overlap_bg(self, p):
         b = get_box(p)
@@ -292,9 +302,8 @@ class Map:
                 p.vy *= vym
 
     def next_draw(self):
-        self.next()
         self.draw()
-
+        self.next()
 
 my_map = Map()
 
@@ -365,6 +374,7 @@ def draw():
     my_map.next_draw()
 
 def mousePressed():
+    print('mouseX: {}, mouseY: {}'.format(mouseX, mouseY))
     loop()  # Holding down the mouse activates looping
 
 def mouseReleased():
