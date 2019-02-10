@@ -41,11 +41,16 @@ def get_vxm_vym(o1, o2):
     else:
         y_dist = o2.pre_y - o1.pre_y - o1.img.height
 
+    if x_dist <= 0 and y_dist <= 0:
+        print('get_vxm_vym both dist <= 0')
+        print('o1 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(o1.pre_x, o1.pre_y, o1.pre_vx, o1.pre_vy, o1.x, o1.y, o1.vx, o1.vy))
+        print('o2 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(o2.pre_x, o2.pre_y, o2.pre_vx, o2.pre_vy, o2.x, o2.y, o2.vx, o2.vy))
 
-    if x_dist < 0:
+
+    if x_dist <= 0:
         return 1, -1
 
-    if y_dist < 0:
+    if y_dist <= 0:
         return -1, 1
 
     x_speed = abs(o1.pre_vx - o2.pre_vx)
@@ -59,6 +64,9 @@ def get_vxm_vym(o1, o2):
     x_time = x_dist / x_speed
     y_time = y_dist / y_speed
 
+    print('get_vxm_vym both dist > 0')
+    print('o1 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(o1.pre_x, o1.pre_y, o1.pre_vx, o1.pre_vy, o1.x, o1.y, o1.vx, o1.vy))
+    print('o2 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(o2.pre_x, o2.pre_y, o2.pre_vx, o2.pre_vy, o2.x, o2.y, o2.vx, o2.vy))
     if x_time > y_time:
         return -1, 1
     return 1, -1
@@ -94,8 +102,8 @@ class MovingObject:
         self.init_speed()
 
     def init_location(self):
-        self.x = random(self.x_l)
-        self.y = random(self.y_l)
+        self.x = floor(random(self.x_l))
+        self.y = floor(random(self.y_l))
         self.pre_x = self.x
         self.pre_y = self.y
 
@@ -147,11 +155,69 @@ class Map:
                 return True
         return False
 
+    def get_vxm_vym_bg(self, p):
+        b = get_box(p)
+
+        def get_w_overlap(t='left'):
+            w_range = range(floor(b['left']), ceil(b['right']))
+
+            if t == 'right':
+                w_range = reverse(w_range)
+
+            for wi in w_range:
+                for hi in range(floor(b['bottom']), ceil(b['top'])):
+                    if self.bg_wall[wi][hi] == 1:
+                        return wi
+
+        def get_h_overlap(t='bottom'):
+            h_range = range(floor(b['bottom']), ceil(b['top']))
+            if t == 'top':
+                h_range = reverse(h_range)
+
+            for hi in h_range:
+                for wi in range(floor(b['left']), ceil(b['right'])):
+                    if self.bg_wall[wi][hi] == 1:
+                        return hi
+
+        x_collision = get_w_overlap('left') if p.vx > 0 else get_w_overlap('right')
+        y_collision = get_h_overlap('bottom') if p.vy > 0 else get_h_overlap('top')
+
+        # print('collision', x_collision, y_collision)
+
+        if p.pre_vx > 0:
+            x_dist = x_collision - (p.pre_x + p.img.width)
+        else:
+            x_dist = p.pre_x - x_collision
+
+        if p.pre_vy > 0:
+            y_dist = y_collision - (p.pre_y + p.img.height)
+        else:
+            y_dist = p.pre_y - y_collision
+
+        if x_dist <= 0 and y_dist <= 0:
+            print('both dist <= 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}), pre_v: ({}, {})'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist, p.pre_vx, p.pre_vy))
+
+        if x_dist <= 0:
+            return 1, -1
+
+        if y_dist <= 0:
+            return -1, 1
+
+        x_time = x_dist / abs(p.pre_vx)
+        y_time = y_dist / abs(p.pre_vy)
+
+        print('both dist > 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}), pre_v: ({}, {}), time: ({}, {})'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist, p.pre_vx, p.pre_vy, x_time, y_time))
+
+        if x_time > y_time:
+            return 1, -1
+        return -1, 1
+
     def is_overlap_bg(self, p):
         b = get_box(p)
+        # print('qweewq', p.x, p.y, p.img.width, p.img.height)
         for wi in range(floor(b['left']), ceil(b['right'])):
             for hi in range(floor(b['bottom']), ceil(b['top'])):
-                if self.blank_map[wi][hi] == 0:
+                if self.bg_wall[wi][hi] == 1:
                     return True
         return False
 
@@ -169,16 +235,15 @@ class Map:
 
     def add_bg(self, bg_img):
         self.bg_img = bg_img
-        self.blank_map = [[1 if bg_img.get(wi, hi) in blank_colors else 0 for hi in range(bg_img.height)] for wi in range(bg_img.width)]
+        self.bg_wall = [[1 if bg_img.get(wi, hi) not in blank_colors else 0 for hi in range(bg_img.height)] for wi in range(bg_img.width)]
 
     def next(self):
         for p in self.points:
             p.next()
         self.hit_rebound()
+        self.hit_rebound_bg()
 
     def draw(self):
-        rect(map_x-1, map_y-1, map_width+1, map_height+1)
-
         pg0.beginDraw()
         pg0.clear()
         pg0.background(204)
@@ -218,6 +283,13 @@ class Map:
                     p.vx *= vxm
                     p.vy *= vym
                     connect(p, pi)
+
+    def hit_rebound_bg(self):
+        for p in self.points:
+            if self.is_overlap_bg(p):
+                vxm, vym = self.get_vxm_vym_bg(p)
+                p.vx *= vxm
+                p.vy *= vym
 
     def next_draw(self):
         self.next()
