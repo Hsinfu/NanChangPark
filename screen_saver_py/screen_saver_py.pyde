@@ -1,8 +1,9 @@
-max_connection = 2
+max_connection = 15
+
 speed = 5
 # window_width, window_height = 1200, 800
 map_x, map_y = 0, 0
-map_width, map_height = 600, 600
+map_width, map_height = 1920, 1080
 obj_width, obj_height = 32, 44
 
 # black_colors = [
@@ -348,7 +349,7 @@ def setup():
     pg2 = createGraphics(map_width, map_height)
 
     # add back ground image
-    bg_img = loadImage("img/map_background.png")
+    bg_img = loadImage("img/gutingpark-02.png")
     bg_img.resize(map_width, map_height)
 
     pxls = {}
