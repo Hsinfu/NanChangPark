@@ -1,4 +1,3 @@
-screen_saver_py/screen_saver_py.pyde
 max_connection = 2
 speed = 5
 # window_width, window_height = 1200, 800
