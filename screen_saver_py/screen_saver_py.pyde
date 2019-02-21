@@ -1,8 +1,9 @@
-
+screen_saver_py/screen_saver_py.pyde
 max_connection = 2
 speed = 5
-window_width, window_height = 1200, 800
-map_x, map_y, map_width, map_height = 500, 100, 600, 600
+# window_width, window_height = 1200, 800
+map_x, map_y = 0, 0
+map_width, map_height = 600, 600
 obj_width, obj_height = 32, 44
 
 # black_colors = [
@@ -335,7 +336,12 @@ my_map = Map()
 
 
 def setup():
-    size(window_width, window_height)
+    # size(window_width, window_height)
+    fullScreen()
+
+    global map_x, map_y
+    map_x = (width - map_width) / 2
+    map_y = (height - map_height) / 2
 
     global pg0, pg1, pg2
     pg0 = createGraphics(map_width, map_height)
