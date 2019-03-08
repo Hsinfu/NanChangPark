@@ -260,9 +260,15 @@ class Map:
             p.init_location()
         self.points.append(p)
 
-    def add_bg(self, bg_img):
-        self.bg_img = bg_img
-        self.bg_wall = [[1 if bg_img.get(wi, hi) not in blank_colors else 0 for hi in range(bg_img.height)] for wi in range(bg_img.width)]
+    def add_bg_map(self, img):
+        self.bg_map_img = img
+        self.bg_wall = [[1 if img.get(wi, hi) not in blank_colors else 0 for hi in range(img.height)] for wi in range(img.width)]
+
+    def add_bg_bottom(self, img):
+        self.bg_bottom_img = img
+
+    def add_bg_top(self, img):
+        self.bg_top_img = img
 
     def next(self):
         for p in self.points:
@@ -271,20 +277,37 @@ class Map:
         self.hit_rebound_bg()
         self.apply_rebound()
 
-    def draw(self):
+    def draw_pg_bottom(self):
+        pg_bottom.beginDraw()
+        pg_bottom.clear()
+        pg_bottom.background(204)
+        pg_bottom.image(self.bg_bottom_img, 0, 0)
+        pg_bottom.endDraw()
+        image(pg_bottom, map_x, map_y)
+
+    def draw_pg_top(self):
+        pg_top.beginDraw()
+        pg_top.clear()
+        pg_top.image(self.bg_top_img, 0, 0)
+        pg_top.endDraw()
+        image(pg_top, map_x, map_y)
+
+    def draw_pg0(self):
         pg0.beginDraw()
         pg0.clear()
-        pg0.background(204)
-        pg0.image(self.bg_img, 0, 0)
+        pg0.image(self.bg_map_img, 0, 0)
         pg0.endDraw()
         image(pg0, map_x, map_y)
 
+    def draw_pg1(self):
         pg1.beginDraw()
         pg1.clear()
         for p in self.points:
             pg1.image(p.img, p.x, p.y)
         pg1.endDraw()
         image(pg1, map_x, map_y)
+
+    def draw_pg2(self):
         pg2.beginDraw()
         pg2.clear()
         for con in connects:
@@ -298,6 +321,13 @@ class Map:
             )
         pg2.endDraw()
         image(pg2, map_x, map_y)
+
+    def draw(self):
+        self.draw_pg_bottom()
+        self.draw_pg0()
+        self.draw_pg1()
+        self.draw_pg2()
+        self.draw_pg_top()
 
     def hit_rebound(self):
         points = [p for p in self.points]
@@ -343,24 +373,34 @@ def setup():
     map_x = (width - map_width) / 2
     map_y = (height - map_height) / 2
 
-    global pg0, pg1, pg2
+    global pg_bottom, pg0, pg1, pg2, pg_top
+    pg_bottom = createGraphics(map_width, map_height)
     pg0 = createGraphics(map_width, map_height)
     pg1 = createGraphics(map_width, map_height)
     pg2 = createGraphics(map_width, map_height)
+    pg_top = createGraphics(map_width, map_height)
 
     # add back ground image
-    bg_img = loadImage("img/gutingpark-02.png")
-    bg_img.resize(map_width, map_height)
+    bg_map_img = loadImage("img/bg_map.png")
+    bg_map_img.resize(map_width, map_height)
 
-    pxls = {}
-    for p in bg_img.pixels:
-        pxls[p] = 1 if p not in pxls else pxls[p] + 1
+    # pxls = {}
+    # for p in bg_img.pixels:
+    #     pxls[p] = 1 if p not in pxls else pxls[p] + 1
 
-    p_most = max(pxls.iteritems(), key=lambda i: i[1])[0]
-    print('bg_img pixel {} with the most num: {}'.format(p_most, pxls[p_most]))
-    print('bg_img pixels', pxls)  # all pixels
-    print('bg_img width {} height {}'.format(bg_img.width, bg_img.height))
-    my_map.add_bg(bg_img)
+    # p_most = max(pxls.iteritems(), key=lambda i: i[1])[0]
+    # print('bg_img pixel {} with the most num: {}'.format(p_most, pxls[p_most]))
+    # print('bg_img pixels', pxls)  # all pixels
+    # print('bg_img width {} height {}'.format(bg_img.width, bg_img.height))
+    my_map.add_bg_map(bg_map_img)
+
+    bg_bottom_img = loadImage("img/bg_bottom.png")
+    bg_bottom_img.resize(map_width, map_height)
+    my_map.add_bg_bottom(bg_bottom_img)
+
+    bg_top_img = loadImage("img/bg_top.png")
+    bg_top_img.resize(map_width, map_height)
+    my_map.add_bg_top(bg_top_img)
 
     # add users
     w, h = obj_width, obj_height
