@@ -381,7 +381,7 @@ def setup():
     pg_top = createGraphics(map_width, map_height)
 
     # add back ground image
-    bg_map_img = loadImage("img/bg_map.png")
+    bg_map_img = loadImage("../img/bg_map.png")
     bg_map_img.resize(map_width, map_height)
 
     # pxls = {}
@@ -394,11 +394,11 @@ def setup():
     # print('bg_img width {} height {}'.format(bg_img.width, bg_img.height))
     my_map.add_bg_map(bg_map_img)
 
-    bg_bottom_img = loadImage("img/bg_bottom.png")
+    bg_bottom_img = loadImage("../img/bg_bottom.png")
     bg_bottom_img.resize(map_width, map_height)
     my_map.add_bg_bottom(bg_bottom_img)
 
-    bg_top_img = loadImage("img/bg_top.png")
+    bg_top_img = loadImage("../img/bg_top.png")
     bg_top_img.resize(map_width, map_height)
     my_map.add_bg_top(bg_top_img)
 
@@ -406,37 +406,37 @@ def setup():
     w, h = obj_width, obj_height
 
     # add man01.png
-    img = loadImage("img/man01.png")
+    img = loadImage("../img/man01.png")
     img.resize(w, h)
     my_map.add_point(MovingObject(img))
 
     # add man02.png
-    img = loadImage("img/man02.png")
+    img = loadImage("../img/man02.png")
     img.resize(w, h)
     my_map.add_point(MovingObject(img))
 
     # add man03.png
-    img = loadImage("img/man03.png")
+    img = loadImage("../img/man03.png")
     img.resize(w, h)
     my_map.add_point(MovingObject(img))
 
     # add man04.png
-    img = loadImage("img/man04.png")
+    img = loadImage("../img/man04.png")
     img.resize(w, h)
     my_map.add_point(MovingObject(img))
 
     # add man05.png
-    img = loadImage("img/man05.png")
+    img = loadImage("../img/man05.png")
     img.resize(w, h)
     my_map.add_point(MovingObject(img))
 
     # add man06.png
-    img = loadImage("img/man06.png")
+    img = loadImage("../img/man06.png")
     img.resize(w, h)
     my_map.add_point(MovingObject(img))
 
     # add man07.png
-    img = loadImage("img/man07.png")
+    img = loadImage("../img/man07.png")
     img.resize(w, h)
     my_map.add_point(MovingObject(img))
 
@@ -454,5 +454,5 @@ def mouseReleased():
 
 def keyPressed():
     # print("pressed %s %d" % (key, keyCode))
-    pg1.save('layers/img_layer.png')
-    pg2.save('layers/line_layer.png')
+    pg1.save('../layers/img_layer.png')
+    pg2.save('../layers/line_layer.png')
