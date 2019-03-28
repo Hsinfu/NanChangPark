@@ -3,30 +3,31 @@ from game import Game
 
 def setup():
     fullScreen()
+    frameRate(20)
 
     # init game
     global game
     game = Game()
 
     # draw() will not loop
-    noLoop()
+    # noLoop()
 
 
 def draw():
     game.next_draw()
 
 
-def mousePressed():
-    # print('mouseX: {}, mouseY: {}'.format(mouseX, mouseY))
-    # Holding down the mouse activates looping
-    loop()
+# def mousePressed():
+#     # print('mouseX: {}, mouseY: {}'.format(mouseX, mouseY))
+#     # Holding down the mouse activates looping
+#     loop()
 
 
-def mouseReleased():
-    # Releasing the mouse stops looping draw()
-    noLoop()
+# def mouseReleased():
+#     # Releasing the mouse stops looping draw()
+#     noLoop()
 
 
 def keyPressed():
-    print("pressed %s %d" % (key, keyCode))
-    game.key_pressed(key)
+    # print("pressed %s %d" % (key, keyCode))
+    game.key_pressed(key, keyCode)
