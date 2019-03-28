@@ -30,14 +30,7 @@ class Game:
             STATE['confirm']: get_state_img(STATE['confirm']),
             STATE['level1-description']: get_state_img(STATE['level1-description']),
         }
-        self.init(state)
-
-    def init(self, state):
-        print('init', state)
         self.state = state
-        if state == STATE['level1']:
-            self.timeout = 20
-            self.init_map_level1()
 
     def init_map_level1(self):
         self.map = HouseMap(
@@ -68,13 +61,6 @@ class Game:
         self.map.add_person(Person(
             img=loadImage("../img/level1/man07.png")
         ))
-
-    def try_load_user(self):
-        try:
-            user_img = loadImage('../img/user/user.png')
-            self.init(STATE['confirm'])
-        except Exception:
-            pass
 
     def draw_start(self, state):
         # print('draw_start', state)
@@ -131,17 +117,19 @@ class Game:
     def key_pressed(self, key, keyCode):
         # print('key_pressed', key, keyCode, self.state)
         if self.state == STATE['welcome']:
-            self.init(STATE['scan'])
+            self.state = STATE['scan']
         elif self.state == STATE['scan']:
             self.scan()
-            self.init(STATE['confirm'])
+            self.state = STATE['confirm']
         elif self.state == STATE['confirm']:
             if key == 'x':
                 self.scan()
             if key == 'a':
-                self.init(STATE['level1-description'])
+                self.state = STATE['level1-description']
         elif self.state == STATE['level1-description']:
-            self.init(STATE['level1'])
+            self.timeout = 20
+            self.init_map_level1()
+            self.state = STATE['level1']
         elif self.state == STATE['level1']:
             if key == 's':
                 self.map.save()
