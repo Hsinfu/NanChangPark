@@ -58,16 +58,16 @@ def get_v_rebound(p1, p2):
     if y_dist < 0:
         return True, False
 
-    x_speed = abs(p1.pre_vx - p2.pre_vx)
-    y_speed = abs(p1.pre_vy - p2.pre_vy)
+    x_step = abs(p1.pre_vx - p2.pre_vx)
+    y_step = abs(p1.pre_vy - p2.pre_vy)
 
-    if x_speed == 0:
+    if x_step == 0:
         return False, True
-    if y_speed == 0:
+    if y_step == 0:
         return True, False
 
-    x_time = x_dist / x_speed
-    y_time = y_dist / y_speed
+    x_time = x_dist / x_step
+    y_time = y_dist / y_step
 
     print('get_v_rebound both dist >= 0')
     print('p1 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p1.pre_x, p1.pre_y, p1.pre_vx, p1.pre_vy, p1.x, p1.y, p1.vx, p1.vy))

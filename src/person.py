@@ -1,21 +1,21 @@
 import layers
-from constant import default_speed, default_img_width, default_img_height
+from constant import default_step, default_img_width, default_img_height
 from utils import random_positive_negative
 
 class Person:
-    def __init__(self, img, w=None, h=None, speed=None,
+    def __init__(self, img, w=None, h=None, step=None,
                  init_x=None, init_y=None, init_vx=None, init_vy=None):
-        self.speed = speed or default_speed
+        self.step = step or default_step
         self.init_img(img, w, h)
         self.init_location(init_x, init_y)
-        self.init_speed(init_vx, init_vy)
+        self.init_step(init_vx, init_vy)
 
     def random_location(self):
         random_x = random(layers.pg_people.width - self.img.width)
         random_y = random(layers.pg_people.height - self.img.height)
         return random_x, random_y
 
-    def random_speed(self, direction='corners'):
+    def random_step(self, direction='corners'):
         if direction == 'corners':
             w, h = self.img.width, self.img.height
             l = sqrt(w * w + h * h)
@@ -25,8 +25,8 @@ class Person:
             vx_ratio = random(1)
             vy_ratio = sqrt(1 - vx_ratio * vx_ratio)
 
-        random_vx = self.speed * random_positive_negative() * vx_ratio
-        random_vy = self.speed * random_positive_negative() * vy_ratio
+        random_vx = self.step * random_positive_negative() * vx_ratio
+        random_vy = self.step * random_positive_negative() * vy_ratio
         return random_vx, random_vy
 
     def init_img(self, img, w=None, h=None):
@@ -42,8 +42,8 @@ class Person:
         self.pre_x = self.x
         self.pre_y = self.y
 
-    def init_speed(self, init_vx=None, init_vy=None):
-        random_vx, random_vy = self.random_speed()
+    def init_step(self, init_vx=None, init_vy=None):
+        random_vx, random_vy = self.random_step()
         self.vx = init_vx or random_vx
         self.vy = init_vy or random_vy
         self.pre_vx = self.vx

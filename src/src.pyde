@@ -1,9 +1,10 @@
+from constant import frame_rate
 from game import Game
 
 
 def setup():
     fullScreen()
-    frameRate(20)
+    frameRate(frame_rate)
 
     # init game
     global game
