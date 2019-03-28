@@ -101,11 +101,20 @@ class Game:
         layers.pg_start.endDraw()
         image(layers.pg_start, 0, 0)
 
-    def scan(self):
-        command_line('cp ../img/user.png ../img/user/user.png')
+    def cp(self, level=1):
+        if level == 1:
+            i = int(random(7)) + 1
+            f = '../img/level{}/man{:02d}.png'.format(level, i)
+        command_line('cp {} ../img/user/user.png'.format(f))
+
+    def load_user_img(self):
         img = loadImage('../img/user/user.png')
         img.resize(450, 600)
         self.user_img = img
+
+    def scan(self):
+        self.cp()
+        self.load_user_img()
 
     def next_draw(self):
         # print('next_draw', self.state)
