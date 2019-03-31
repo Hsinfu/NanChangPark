@@ -1,5 +1,14 @@
 import layers
-# from constant import default_map_width, default_map_height
+from constant import (
+    text_color,
+    scan_name_style,
+    confirm_name_style,
+    confirm_img_style,
+    level1_description_name_style,
+    level1_description_score_style,
+    level1_name_style,
+    level1_score_style,
+)
 from person import Person
 from house import HouseMap
 from utils import command_line
@@ -69,20 +78,21 @@ class Game:
         layers.pg_start.image(self.imgs[state], 0, 0)
 
         if state == STATE['scan']:
-            layers.pg_start.textSize(42)
-            layers.pg_start.text('Player-112', 610, 135)
-            layers.pg_start.fill(0, 102, 153)
+            layers.pg_start.textSize(scan_name_style.fontsize)
+            layers.pg_start.text('Player-112', scan_name_style.x, scan_name_style.y)
+            layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
         elif state == STATE['confirm']:
-            layers.pg_start.textSize(26)
-            layers.pg_start.text('Player-112', 417, 604)
-            layers.pg_start.fill(0, 102, 153)
-            layers.pg_start.image(self.user_img, 800, 120)
+            layers.pg_start.textSize(confirm_name_style.fontsize)
+            layers.pg_start.text('Player-112', confirm_name_style.x, confirm_name_style.y)
+            layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
+            layers.pg_start.image(self.user_img, confirm_img_style.x, confirm_img_style.y)
         elif state == STATE['level1-description']:
-            layers.pg_start.textSize(24)
-            layers.pg_start.text('Player-112', 165, 80)
-            layers.pg_start.fill(0, 102, 153)
-            layers.pg_start.text('00000000', 1153, 80)
-            layers.pg_start.fill(0, 102, 153)
+            layers.pg_start.textSize(level1_description_name_style.fontsize)
+            layers.pg_start.text('Player-112', level1_description_name_style.x, level1_description_name_style.y)
+            layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
+            layers.pg_start.textSize(level1_description_score_style.fontsize)
+            layers.pg_start.text('00000000', level1_description_score_style.x, level1_description_score_style.y)
+            layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
 
         layers.pg_start.endDraw()
         image(layers.pg_start, 0, 0)
@@ -95,7 +105,7 @@ class Game:
 
     def load_user_img(self):
         img = loadImage('../img/user/user.png')
-        img.resize(450, 600)
+        img.resize(confirm_img_style.width, confirm_img_style.height)
         self.user_img = img
 
     def scan(self):
