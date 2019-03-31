@@ -159,7 +159,6 @@ class HouseMap:
                             for hi in range(img.height)] for wi in range(img.width)]
 
         # init pgs
-        layers.pg_map = createGraphics(self.map_width, self.map_height)
         layers.pg_people = createGraphics(self.map_width, self.map_height)
         layers.pg_connections = createGraphics(self.map_width, self.map_height)
 
@@ -214,13 +213,6 @@ class HouseMap:
             layers.pg_top.endDraw()
             image(layers.pg_top, self.map_x, self.map_y)
 
-    def draw_pg_map(self):
-        layers.pg_map.beginDraw()
-        layers.pg_map.clear()
-        layers.pg_map.image(self.map_img, 0, 0)
-        layers.pg_map.endDraw()
-        image(layers.pg_map, self.map_x, self.map_y)
-
     def draw_pg_people(self):
         layers.pg_people.beginDraw()
         layers.pg_people.clear()
@@ -246,7 +238,6 @@ class HouseMap:
 
     def draw(self):
         self.draw_pg_bottom()
-        self.draw_pg_map()
         self.draw_pg_people()
         self.draw_pg_connections()
         self.draw_pg_top()

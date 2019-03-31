@@ -27,7 +27,7 @@ max_connections_per_collision = 5
 
 # map
 # default_map_width, default_map_height = 1920, 1080
-default_map_width, default_map_height = 800, 600
+default_map_width, default_map_height = 1440, 900
 blank_colors = [0, 16777215]
 
 # person
