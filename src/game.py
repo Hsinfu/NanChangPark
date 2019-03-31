@@ -4,8 +4,6 @@ from constant import (
     scan_name_style,
     confirm_name_style,
     confirm_img_style,
-    level1_description_name_style,
-    level1_description_score_style,
     level1_name_style,
     level1_score_style,
 )
@@ -86,13 +84,6 @@ class Game:
             layers.pg_start.text('Player-112', confirm_name_style.x, confirm_name_style.y)
             layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
             layers.pg_start.image(self.user_img, confirm_img_style.x, confirm_img_style.y)
-        elif state == STATE['level1-description']:
-            layers.pg_start.textSize(level1_description_name_style.fontsize)
-            layers.pg_start.text('Player-112', level1_description_name_style.x, level1_description_name_style.y)
-            layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
-            layers.pg_start.textSize(level1_description_score_style.fontsize)
-            layers.pg_start.text('00000000', level1_description_score_style.x, level1_description_score_style.y)
-            layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
 
         layers.pg_start.endDraw()
         image(layers.pg_start, 0, 0)
