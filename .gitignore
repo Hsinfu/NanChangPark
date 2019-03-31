@@ -104,4 +104,9 @@ venv.bak/
 .mypy_cache/
 
 
+# mac
 .DS_Store
+
+# skip user image
+img/user/user.png
+
