@@ -1,11 +1,15 @@
 import layers
 from constant import (
     text_color,
+    time_color,
     scan_name_style,
     confirm_name_style,
     confirm_img_style,
     level1_user_init_x,
     level1_user_init_y,
+    level1_name_style,
+    level1_score_style,
+    level1_time_style,
 )
 from person import Person
 from house import HouseMap
@@ -36,10 +40,16 @@ class Game:
             STATE['scan']: get_state_img(STATE['scan']),
             STATE['confirm']: get_state_img(STATE['confirm']),
             STATE['level1-description']: get_state_img(STATE['level1-description']),
+            STATE['level1']: get_state_img(STATE['level1'])
         }
+        self.user_idx = 0
+        self.init(state)
+
+    def init(self, state):
         self.state = state
+        self.user_idx += 1
         self.init_map_level1_called = 0
-        self.user_idx = 1
+        self.start_time = 0
         self.key_codes = {
             LEFT: False,
             RIGHT: False,
@@ -51,6 +61,15 @@ class Game:
     def user_name(self):
         return 'Player-{:03d}'.format(self.user_idx)
 
+    @property
+    def time_left(self):
+        pass_time = millis() - self.start_time if self.start_time else 0
+        return self.timeout - pass_time
+
+    @property
+    def time_left_str(self):
+        return '{:02.2f}'.format(self.time_left / 1000.0)
+
     def init_map_level1(self):
         if self.init_map_level1_called == 1:
             self._init_map_level1()
@@ -59,8 +78,8 @@ class Game:
     def _init_map_level1(self):
         self.map = HouseMap(
             map_img=loadImage("../img/level1/bg_map.png"),
-            bottom_img=loadImage("../img/level1/bg_bottom.png"),
             top_img=loadImage("../img/level1/bg_top.png"),
+            start_move=False,
         )
 
         self.map.set_user(Person(
@@ -100,13 +119,26 @@ class Game:
 
         if state == STATE['scan']:
             layers.pg_start.textSize(scan_name_style.fontsize)
-            layers.pg_start.text(self.user_name, scan_name_style.x, scan_name_style.y)
             layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
+            layers.pg_start.text(self.user_name, scan_name_style.x, scan_name_style.y)
         elif state == STATE['confirm']:
             layers.pg_start.textSize(confirm_name_style.fontsize)
-            layers.pg_start.text(self.user_name, confirm_name_style.x, confirm_name_style.y)
             layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
+            layers.pg_start.text(self.user_name, confirm_name_style.x, confirm_name_style.y)
             layers.pg_start.image(self.user_img, confirm_img_style.x, confirm_img_style.y)
+        elif state == STATE['level1']:
+            # name
+            layers.pg_start.textSize(level1_name_style.fontsize)
+            layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
+            layers.pg_start.text(self.user_name, level1_name_style.x, level1_name_style.y)
+            # score
+            layers.pg_start.textSize(level1_score_style.fontsize)
+            layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
+            layers.pg_start.text(self.map.score, level1_score_style.x, level1_score_style.y)
+            # time
+            layers.pg_start.textSize(level1_time_style.fontsize)
+            layers.pg_start.fill(time_color.r, time_color.g, time_color.b)
+            layers.pg_start.text(self.time_left_str, level1_time_style.x, level1_time_style.y)
 
         layers.pg_start.endDraw()
         image(layers.pg_start, 0, 0)
@@ -127,17 +159,15 @@ class Game:
         self.load_user_img()
 
     def next_draw(self):
-        # print('next_draw', self.state)
-        if self.state in [
-            STATE['welcome'],
-            STATE['scan'],
-            STATE['confirm'],
-        ]:
-            self.draw_start(self.state)
-        elif self.state == STATE['level1-description']:
-            self.draw_start(self.state)
+        # game over
+        if self.state == STATE['level1'] and self.time_left < 0:
+            self.init(STATE['welcome'])
+
+        # normal
+        self.draw_start(self.state)
+        if self.state == STATE['level1-description']:
             self.init_map_level1()
-        else:
+        elif self.state == STATE['level1']:
             self.map.draw()
             self.map.move()
             self.map.hit_rebound_user()
@@ -186,12 +216,21 @@ class Game:
             if key == 'a':
                 self.state = STATE['level1-description']
         elif self.state == STATE['level1-description']:
-            self.timeout = 20
+            self.timeout = 20 * 1000  # 20 seconds
             self.state = STATE['level1']
         elif self.state == STATE['level1']:
             if key == 's':
                 self.map.save()
-            if key_code in [LEFT, RIGHT, DOWN, UP]:
+            elif key == 'a':
+                if self.start_time == 0:
+                    self.start_time = millis()
+                self.map.start_move = True
+            elif key == 'b':
+                if self.start_time:
+                    self.timeout -= (millis() - self.start_time)
+                    self.start_time = 0
+                self.map.start_move = False
+            elif key_code in [LEFT, RIGHT, DOWN, UP]:
                 self.key_codes[key_code] = True
 
     def key_released(self, key, key_code):
