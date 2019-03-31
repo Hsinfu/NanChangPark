@@ -38,8 +38,14 @@ class Game:
             STATE['level1-description']: get_state_img(STATE['level1-description']),
         }
         self.state = state
+        self.init_map_level1_called = 0
 
     def init_map_level1(self):
+        if self.init_map_level1_called == 1:
+            self._init_map_level1()
+        self.init_map_level1_called += 1
+
+    def _init_map_level1(self):
         self.map = HouseMap(
             map_img=loadImage("../img/level1/bg_map.png"),
             bottom_img=loadImage("../img/level1/bg_bottom.png"),
@@ -109,9 +115,11 @@ class Game:
             STATE['welcome'],
             STATE['scan'],
             STATE['confirm'],
-            STATE['level1-description'],
         ]:
             self.draw_start(self.state)
+        elif self.state == STATE['level1-description']:
+            self.draw_start(self.state)
+            self.init_map_level1()
         else:
             self.map.next_draw()
 
@@ -129,7 +137,6 @@ class Game:
                 self.state = STATE['level1-description']
         elif self.state == STATE['level1-description']:
             self.timeout = 20
-            self.init_map_level1()
             self.state = STATE['level1']
         elif self.state == STATE['level1']:
             if key == 's':
