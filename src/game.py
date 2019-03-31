@@ -133,10 +133,40 @@ class Game:
             self.draw_start(self.state)
             self.init_map_level1()
         else:
-            self.map.next_draw()
+            self.map.draw()
+            self.map.move()
+            self.map.hit_rebound_user()
+            self.map.hit_rebound_people()
+            self.map.hit_rebound_bg()
+            self.set_user_dictection()
+            self.map.apply_rebound()
 
     def set_user_dictection(self):
-        pass
+        def reverse_vx():
+            if not self.map.user.vx_rebound:
+                self.map.user.pre_vx = self.map.user.vx
+                self.map.user.vx *= -1
+
+        def reverse_vy():
+            if not self.map.user.vy_rebound:
+                self.map.user.pre_vy = self.map.user.vy
+                self.map.user.vy *= -1
+
+        # x direction
+        if self.key_codes[LEFT] and self.key_codes[RIGHT]:
+            pass
+        elif self.key_codes[LEFT] and self.map.user.vx > 0:
+            reverse_vx()
+        elif self.key_codes[RIGHT] and self.map.user.vx < 0:
+            reverse_vx()
+
+        # y direction
+        if self.key_codes[DOWN] and self.key_codes[UP]:
+            pass
+        elif self.key_codes[DOWN] and self.map.user.vy < 0:
+            reverse_vy()
+        elif self.key_codes[UP] and self.map.user.vy > 0:
+            reverse_vy()
 
     def key_pressed(self, key, key_code):
         # print('key_pressed', key, key_code, self.state)
@@ -158,10 +188,8 @@ class Game:
                 self.map.save()
             if key_code in [LEFT, RIGHT, DOWN, UP]:
                 self.key_codes[key_code] = True
-                self.set_user_dictection()
 
     def key_released(self, key, key_code):
         if self.state == STATE['level1']:
             if key_code in [LEFT, RIGHT, DOWN, UP]:
                 self.key_codes[key_code] = False
-                self.set_user_dictection()
