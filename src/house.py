@@ -8,6 +8,8 @@ from constant import (
     blank_colors,
     text_color,
     level1_user_name_style,
+    level1_name_style,
+    level1_score_style,
 )
 from connection import Connection
 
@@ -28,9 +30,9 @@ def is_intersect(p1, p2):
         r1['bottom'] > r2['top']
     )
 
-def is_intersect_ppl(p, ppl):
-    for _p in ppl:
-        if is_intersect(p, _p):
+def is_intersect_people(p, people):
+    for pi in people:
+        if is_intersect(p, pi):
             return True
     return False
 
@@ -183,7 +185,7 @@ class HouseMap:
         is_intersect(self.user, p)
 
     def is_overlap_current_people(self, p):
-        return is_intersect_ppl(p, self.people)
+        return is_intersect_people(p, self.people)
 
     def is_overlap_bg(self, p):
         return is_intersect_map(p, self.map_wall)
@@ -216,7 +218,16 @@ class HouseMap:
             layers.pg_bottom.beginDraw()
             layers.pg_bottom.clear()
             layers.pg_bottom.background(204)
+            # bg
             layers.pg_bottom.image(self.bottom_img, 0, 0)
+            # name
+            layers.pg_bottom.textSize(level1_name_style.fontsize)
+            layers.pg_bottom.text('Player-112', level1_name_style.x, level1_name_style.y)
+            layers.pg_bottom.fill(text_color.r, text_color.g, text_color.b)
+            # score
+            layers.pg_bottom.textSize(level1_score_style.fontsize)
+            layers.pg_bottom.text('00000000', level1_score_style.x, level1_score_style.y)
+            layers.pg_bottom.fill(text_color.r, text_color.g, text_color.b)
             layers.pg_bottom.endDraw()
             image(layers.pg_bottom, self.map_x, self.map_y)
 
@@ -265,40 +276,57 @@ class HouseMap:
         self.connection.connect(p1, p2)
 
     def move(self):
+        if self.user:
+            self.user.move()
         for p in self.people:
             p.move()
 
-    def hit_rebound(self):
+    def _hit_rebound_people(self, p, people, should_connect=False):
+        for pi in people:
+            if is_intersect(p, pi):
+                vx_re, vy_re = get_v_rebound(p, pi)
+                if vx_re:
+                    pi.set_vx_rebound()
+                    p.set_vx_rebound()
+                if vy_re:
+                    pi.set_vy_rebound()
+                    p.set_vy_rebound()
+                if should_connect:
+                    self.connect(p, pi)
+
+    def hit_rebound_user(self):
+        self._hit_rebound_people(self.user, self.people, should_connect=True)
+
+    def hit_rebound_people(self):
         people = [p for p in self.people]
         while len(people) > 0:
             p = people.pop()
-            for pi in people:
-                if is_intersect(p, pi):
-                    vx_re, vy_re = get_v_rebound(p, pi)
-                    if vx_re:
-                        pi.set_vx_rebound()
-                        p.set_vx_rebound()
-                    if vy_re:
-                        pi.set_vy_rebound()
-                        p.set_vy_rebound()
-                    self.connect(p, pi)
+            self._hit_rebound_people(p, people)
+
+    def _hit_rebound_bg(self, p):
+        if self.is_overlap_bg(p):
+            vx_re, vy_re = get_v_rebound_bg(p, self.map_wall)
+            if vx_re:
+                p.set_vx_rebound()
+            if vy_re:
+                p.set_vy_rebound()
 
     def hit_rebound_bg(self):
+        if self.user:
+            self._hit_rebound_bg(self.user)
         for p in self.people:
-            if self.is_overlap_bg(p):
-                vx_re, vy_re = get_v_rebound_bg(p, self.map_wall)
-                if vx_re:
-                    p.set_vx_rebound()
-                if vy_re:
-                    p.set_vy_rebound()
+            self._hit_rebound_bg(p)
 
     def apply_rebound(self):
+        if self.user:
+            self.user.apply_rebound()
         for p in self.people:
             p.apply_rebound()
 
     def next(self):
         self.move()
-        self.hit_rebound()
+        self.hit_rebound_user()
+        self.hit_rebound_people()
         self.hit_rebound_bg()
         self.apply_rebound()
 

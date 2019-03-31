@@ -4,8 +4,6 @@ from constant import (
     scan_name_style,
     confirm_name_style,
     confirm_img_style,
-    level1_name_style,
-    level1_score_style,
     level1_user_init_x,
     level1_user_init_y,
 )
