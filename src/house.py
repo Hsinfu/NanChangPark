@@ -149,6 +149,7 @@ class HouseMap:
     def __init__(self, map_img, bottom_img=None, top_img=None,
                  map_width=None, map_height=None):
         self.user = None
+        self.user_name = ''
         self.people = []
         self.connection = Connection()
         self.init_map(map_img, map_width, map_height)
@@ -199,8 +200,13 @@ class HouseMap:
             return False
         return True
 
-    def set_user(self, p):
+    def set_user(self, p, name):
         self.user = p
+        self.user_name = name
+
+    @property
+    def score(self):
+        return '{:08d}'.format(len(self.connection.connects))
 
     def add_person(self, p, max_retry=1000):
         for retry_i in range(max_retry):
@@ -222,11 +228,11 @@ class HouseMap:
             layers.pg_bottom.image(self.bottom_img, 0, 0)
             # name
             layers.pg_bottom.textSize(level1_name_style.fontsize)
-            layers.pg_bottom.text('Player-112', level1_name_style.x, level1_name_style.y)
+            layers.pg_bottom.text(self.user_name, level1_name_style.x, level1_name_style.y)
             layers.pg_bottom.fill(text_color.r, text_color.g, text_color.b)
             # score
             layers.pg_bottom.textSize(level1_score_style.fontsize)
-            layers.pg_bottom.text('00000000', level1_score_style.x, level1_score_style.y)
+            layers.pg_bottom.text(self.score, level1_score_style.x, level1_score_style.y)
             layers.pg_bottom.fill(text_color.r, text_color.g, text_color.b)
             layers.pg_bottom.endDraw()
             image(layers.pg_bottom, self.map_x, self.map_y)

@@ -39,12 +39,17 @@ class Game:
         }
         self.state = state
         self.init_map_level1_called = 0
+        self.user_idx = 1
         self.key_codes = {
             LEFT: False,
             RIGHT: False,
             DOWN: False,
             UP: False,
         }
+
+    @property
+    def user_name(self):
+        return 'Player-{:03d}'.format(self.user_idx)
 
     def init_map_level1(self):
         if self.init_map_level1_called == 1:
@@ -62,7 +67,7 @@ class Game:
             img=loadImage("../img/user/user.png"),
             init_x=level1_user_init_x,
             init_y=level1_user_init_y,
-        ))
+        ), self.user_name)
 
         # add static people
         self.map.add_person(Person(
@@ -95,11 +100,11 @@ class Game:
 
         if state == STATE['scan']:
             layers.pg_start.textSize(scan_name_style.fontsize)
-            layers.pg_start.text('Player-112', scan_name_style.x, scan_name_style.y)
+            layers.pg_start.text(self.user_name, scan_name_style.x, scan_name_style.y)
             layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
         elif state == STATE['confirm']:
             layers.pg_start.textSize(confirm_name_style.fontsize)
-            layers.pg_start.text('Player-112', confirm_name_style.x, confirm_name_style.y)
+            layers.pg_start.text(self.user_name, confirm_name_style.x, confirm_name_style.y)
             layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
             layers.pg_start.image(self.user_img, confirm_img_style.x, confirm_img_style.y)
 
