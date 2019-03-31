@@ -17,10 +17,12 @@ class Person:
 
     def random_step(self, direction='corners'):
         if direction == 'corners':
-            w, h = self.img.width, self.img.height
-            l = sqrt(w * w + h * h)
-            vx_ratio = w / l
-            vy_ratio = h / l
+            # w, h = self.img.width, self.img.height
+            # l = sqrt(w * w + h * h)
+            # vx_ratio = w / l
+            # vy_ratio = h / l
+            vx_ratio = 1 / sqrt(2)
+            vy_ratio = 1 / sqrt(2)
         else:  # random direction
             vx_ratio = random(1)
             vy_ratio = sqrt(1 - vx_ratio * vx_ratio)
