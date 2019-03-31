@@ -39,6 +39,12 @@ class Game:
         }
         self.state = state
         self.init_map_level1_called = 0
+        self.key_codes = {
+            LEFT: False,
+            RIGHT: False,
+            DOWN: False,
+            UP: False,
+        }
 
     def init_map_level1(self):
         if self.init_map_level1_called == 1:
@@ -123,8 +129,11 @@ class Game:
         else:
             self.map.next_draw()
 
-    def key_pressed(self, key, keyCode):
-        # print('key_pressed', key, keyCode, self.state)
+    def set_user_dictection(self):
+        pass
+
+    def key_pressed(self, key, key_code):
+        # print('key_pressed', key, key_code, self.state)
         if self.state == STATE['welcome']:
             self.state = STATE['scan']
         elif self.state == STATE['scan']:
@@ -141,12 +150,12 @@ class Game:
         elif self.state == STATE['level1']:
             if key == 's':
                 self.map.save()
-            elif keyCode == LEFT:
-                print('left')
-            elif keyCode == RIGHT:
-                print('right')
-            elif keyCode == DOWN:
-                print('down')
-            elif keyCode == UP:
-                print('up')
+            if key_code in [LEFT, RIGHT, DOWN, UP]:
+                self.key_codes[key_code] = True
+                self.set_user_dictection()
 
+    def key_released(self, key, key_code):
+        if self.state == STATE['level1']:
+            if key_code in [LEFT, RIGHT, DOWN, UP]:
+                self.key_codes[key_code] = False
+                self.set_user_dictection()

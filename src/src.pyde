@@ -32,3 +32,8 @@ def draw():
 def keyPressed():
     # print("pressed %s %d" % (key, keyCode))
     game.key_pressed(key, keyCode)
+
+
+def keyReleased():
+    # print("released %s %d" % (key, keyCode))
+    game.key_released(key, keyCode)
