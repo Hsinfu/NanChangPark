@@ -2,7 +2,13 @@
 
 
 import layers
-from constant import default_map_width, default_map_height, blank_colors
+from constant import (
+    default_map_width,
+    default_map_height,
+    blank_colors,
+    text_color,
+    level1_user_name_style,
+)
 from connection import Connection
 
 def get_box(p):
@@ -140,6 +146,7 @@ def get_v_rebound_bg(p, map_wall):
 class HouseMap:
     def __init__(self, map_img, bottom_img=None, top_img=None,
                  map_width=None, map_height=None):
+        self.user = None
         self.people = []
         self.connection = Connection()
         self.init_map(map_img, map_width, map_height)
@@ -172,6 +179,9 @@ class HouseMap:
             top_img.resize(self.map_width, self.map_height)
             self.top_img = top_img
 
+    def is_overley_user(self, p):
+        is_intersect(self.user, p)
+
     def is_overlap_current_people(self, p):
         return is_intersect_ppl(p, self.people)
 
@@ -179,11 +189,16 @@ class HouseMap:
         return is_intersect_map(p, self.map_wall)
 
     def check_init_location_ok(self, p):
+        if self.is_overley_user(p):
+            return False
         if self.is_overlap_current_people(p):
             return False
         if self.is_overlap_bg(p):
             return False
         return True
+
+    def set_user(self, p):
+        self.user = p
 
     def add_person(self, p, max_retry=1000):
         for retry_i in range(max_retry):
@@ -218,6 +233,10 @@ class HouseMap:
         layers.pg_people.clear()
         for p in self.people:
             layers.pg_people.image(p.img, p.x, p.y)
+        layers.pg_people.image(self.user.img, self.user.x, self.user.y)
+        layers.pg_people.textSize(level1_user_name_style.fontsize)
+        layers.pg_people.text('Player-112', self.user.x + level1_user_name_style.x, self.user.y + level1_user_name_style.y)
+        layers.pg_people.fill(text_color.r, text_color.g, text_color.b)
         layers.pg_people.endDraw()
         image(layers.pg_people, self.map_x, self.map_y)
 

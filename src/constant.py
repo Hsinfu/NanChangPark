@@ -14,7 +14,9 @@ confirm_img_style = ImgStyle(width=450, height=600, x=800, y=120)
 # level1
 level1_name_style = TextSytle(fontsize=24, x=165, y=80)
 level1_score_style = TextSytle(fontsize=24, x=1153, y=80)
-
+level1_user_init_x = 800
+level1_user_init_y = 700
+level1_user_name_style = TextSytle(fontsize=12, x=-17, y=-10)
 
 ### game
 # connection

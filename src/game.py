@@ -6,6 +6,8 @@ from constant import (
     confirm_img_style,
     level1_name_style,
     level1_score_style,
+    level1_user_init_x,
+    level1_user_init_y,
 )
 from person import Person
 from house import HouseMap
@@ -57,6 +59,12 @@ class Game:
             bottom_img=loadImage("../img/level1/bg_bottom.png"),
             top_img=loadImage("../img/level1/bg_top.png"),
         )
+
+        self.map.set_user(Person(
+            img=loadImage("../img/user/user.png"),
+            init_x=level1_user_init_x,
+            init_y=level1_user_init_y,
+        ))
 
         # add static people
         self.map.add_person(Person(
