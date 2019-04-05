@@ -3,8 +3,6 @@
 
 import layers
 from constant import (
-    default_map_width,
-    default_map_height,
     blank_colors,
     text_color,
     level1_user_name_style,
@@ -155,8 +153,8 @@ class HouseMap:
 
     def init_map(self, img, map_width=None, map_height=None):
         # init width, height, x, y
-        self.map_width = map_width or default_map_width
-        self.map_height = map_height or default_map_height
+        self.map_width = map_width or width
+        self.map_height = map_height or height
         self.map_x = (width - self.map_width) / 2
         self.map_y = (height - self.map_height) / 2
 
