@@ -107,6 +107,6 @@ venv.bak/
 # mac
 .DS_Store
 
-# skip user image
-img/user/user.png
+# skip player image
+img/players/
 

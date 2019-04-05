@@ -9,6 +9,6 @@ ImgStyle = namedtuple('ImgStyle', ['width', 'height', 'x', 'y'])
 def random_positive_negative():
     return 1 if random(1) > 0.5 else -1
 
-# Ex. instruction -> 'cp ../img/user.png ../img/user/'
+# Ex. instruction -> 'ls -al'
 def command_line(instruction):
     subprocess.check_output(instruction, shell=True)

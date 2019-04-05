@@ -5,7 +5,7 @@ import layers
 from constant import (
     blank_colors,
     text_color,
-    level1_user_name_style,
+    level1_player_name_style,
 )
 from connection import Connection
 
@@ -143,8 +143,8 @@ def get_v_rebound_bg(p, map_wall):
 
 class HouseMap:
     def __init__(self, map_img, top_img=None, map_width=None, map_height=None, start_move=True):
-        self.user = None
-        self.user_name = ''
+        self.player = None
+        self.player_name = ''
         self.people = []
         self.start_move = start_move
         self.connection = Connection()
@@ -174,8 +174,8 @@ class HouseMap:
             top_img.resize(self.map_width, self.map_height)
             self.top_img = top_img
 
-    def is_overley_user(self, p):
-        is_intersect(self.user, p)
+    def is_overley_player(self, p):
+        is_intersect(self.player, p)
 
     def is_overlap_current_people(self, p):
         return is_intersect_people(p, self.people)
@@ -184,7 +184,7 @@ class HouseMap:
         return is_intersect_map(p, self.map_wall)
 
     def check_init_location_ok(self, p):
-        if self.is_overley_user(p):
+        if self.is_overley_player(p):
             return False
         if self.is_overlap_current_people(p):
             return False
@@ -192,9 +192,9 @@ class HouseMap:
             return False
         return True
 
-    def set_user(self, p, name):
-        self.user = p
-        self.user_name = name
+    def set_player(self, p, name):
+        self.player = p
+        self.player_name = name
 
     @property
     def score(self):
@@ -224,9 +224,9 @@ class HouseMap:
         layers.pg_people.clear()
         for p in self.people:
             layers.pg_people.image(p.img, p.x, p.y)
-        layers.pg_people.image(self.user.img, self.user.x, self.user.y)
-        layers.pg_people.textSize(level1_user_name_style.fontsize)
-        layers.pg_people.text('Player-112', self.user.x + level1_user_name_style.x, self.user.y + level1_user_name_style.y)
+        layers.pg_people.image(self.player.img, self.player.x, self.player.y)
+        layers.pg_people.textSize(level1_player_name_style.fontsize)
+        layers.pg_people.text(self.player_name, self.player.x + level1_player_name_style.x, self.player.y + level1_player_name_style.y)
         layers.pg_people.fill(text_color.r, text_color.g, text_color.b)
         layers.pg_people.endDraw()
         image(layers.pg_people, self.map_x, self.map_y)
@@ -257,8 +257,8 @@ class HouseMap:
     def move(self):
         if not self.start_move:
             return
-        if self.user:
-            self.user.move()
+        if self.player:
+            self.player.move()
         for p in self.people:
             p.move()
 
@@ -275,8 +275,8 @@ class HouseMap:
                 if should_connect:
                     self.connect(p, pi)
 
-    def hit_rebound_user(self):
-        self._hit_rebound_people(self.user, self.people, should_connect=True)
+    def hit_rebound_player(self):
+        self._hit_rebound_people(self.player, self.people, should_connect=True)
 
     def hit_rebound_people(self):
         people = [p for p in self.people]
@@ -293,20 +293,20 @@ class HouseMap:
                 p.set_vy_rebound()
 
     def hit_rebound_bg(self):
-        if self.user:
-            self._hit_rebound_bg(self.user)
+        if self.player:
+            self._hit_rebound_bg(self.player)
         for p in self.people:
             self._hit_rebound_bg(p)
 
     def apply_rebound(self):
-        if self.user:
-            self.user.apply_rebound()
+        if self.player:
+            self.player.apply_rebound()
         for p in self.people:
             p.apply_rebound()
 
     def next(self):
         self.move()
-        self.hit_rebound_user()
+        self.hit_rebound_player()
         self.hit_rebound_people()
         self.hit_rebound_bg()
         self.apply_rebound()
