@@ -16,6 +16,7 @@ from constant import (
     level1_score_style,
     level1_time_style,
     level1_timeout_millis,
+    level1_hit_delay_millis,
 )
 from person import Person
 from house import HouseMap
@@ -65,6 +66,7 @@ class Game:
 
     def init_state(self, state):
         self.state = state
+        self.delay_clock = None
         if state == STATE['level1']:
             self.game_clock = Clock(level1_timeout_millis)
         else:
@@ -197,8 +199,21 @@ class Game:
             self.map.hit_rebound_player()
             self.map.hit_rebound_people()
             self.map.hit_rebound_bg()
-            self.set_player_dictection()
+            self.set_delay_clock()
+            if self.delay_clock is None:
+                self.set_player_dictection()
             self.map.apply_rebound()
+
+    def set_delay_clock(self):
+        if self.delay_clock:
+            if self.delay_clock.is_timeout:
+                self.delay_clock = None
+            else:
+                self.delay_clock.tick()
+        else:
+            if self.map.player.vx_rebound or self.map.player.vy_rebound:
+                if self.state == STATE['level1']:
+                    self.delay_clock = Clock(level1_hit_delay_millis, enabled=True)
 
     def set_player_dictection(self):
         def reverse_vx():

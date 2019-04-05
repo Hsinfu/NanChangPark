@@ -25,6 +25,7 @@ level1_player_init_x = 800
 level1_player_init_y = 700
 level1_player_name_style = TextSytle(fontsize=12, x=-17, y=-10)
 level1_timeout_millis = 20 * 1000  # 20 seconds
+level1_hit_delay_millis = 1 * 1000  # 3 seconds
 
 ### game
 # connection
