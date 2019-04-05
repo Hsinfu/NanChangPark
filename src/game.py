@@ -15,10 +15,12 @@ from constant import (
     level1_name_style,
     level1_score_style,
     level1_time_style,
+    level1_timeout_millis,
 )
 from person import Person
 from house import HouseMap
 from utils import command_line
+from clock import Clock
 
 STATE = {
     'welcome': 0,
@@ -48,19 +50,25 @@ class Game:
             STATE['level1']: get_state_img(STATE['level1'])
         }
         self.player_idx = 0
-        self.init(state)
+        self.init_game(state)
 
-    def init(self, state):
-        self.state = state
+    def init_game(self, state):
         self.player_idx += 1
         self.init_map_level1_called = 0
-        self.start_time = 0
         self.key_codes = {
             LEFT: False,
             RIGHT: False,
             DOWN: False,
             UP: False,
         }
+        self.init_state(state)
+
+    def init_state(self, state):
+        self.state = state
+        if state == STATE['level1']:
+            self.game_clock = Clock(level1_timeout_millis)
+        else:
+            self.game_clock = Clock(0)
 
     @property
     def player_name(self):
@@ -73,15 +81,6 @@ class Game:
     @property
     def player_img_fpath(self):
         return '{}{}'.format(player_img_dir, self.player_img_fname)
-
-    @property
-    def time_left(self):
-        pass_time = millis() - self.start_time if self.start_time else 0
-        return self.timeout - pass_time
-
-    @property
-    def time_left_str(self):
-        return '{:02.2f}'.format(self.time_left / 1000.0)
 
     def init_map_level1(self):
         if self.init_map_level1_called == 1:
@@ -151,7 +150,7 @@ class Game:
             # time
             layers.pg_start.textSize(level1_time_style.fontsize)
             layers.pg_start.fill(time_color.r, time_color.g, time_color.b)
-            layers.pg_start.text(self.time_left_str, level1_time_style.x, level1_time_style.y)
+            layers.pg_start.text(self.game_clock.time_left_str, level1_time_style.x, level1_time_style.y)
 
         layers.pg_start.endDraw()
         image(layers.pg_start, 0, 0)
@@ -182,9 +181,11 @@ class Game:
         self.load_player_img()
 
     def next_draw(self):
-        # game over
-        if self.state == STATE['level1'] and self.time_left < 0:
-            self.init(STATE['welcome'])
+        self.game_clock.tick()
+        # game clock timeout
+        if self.game_clock.is_timeout:
+            if self.state == STATE['level1']:
+                self.init_game(STATE['welcome'])
 
         # normal
         self.draw_start(self.state)
@@ -229,29 +230,25 @@ class Game:
     def key_pressed(self, key, key_code):
         # print('key_pressed', key, key_code, self.state)
         if self.state == STATE['welcome']:
-            self.state = STATE['scan']
+            self.init_state(STATE['scan'])
         elif self.state == STATE['scan']:
             self.do_scan()
-            self.state = STATE['confirm']
+            self.init_state(STATE['confirm'])
         elif self.state == STATE['confirm']:
             if key == 'x':
                 self.do_scan()
             if key == 'a':
-                self.state = STATE['level1-description']
+                self.init_state(STATE['level1-description'])
         elif self.state == STATE['level1-description']:
-            self.timeout = 20 * 1000  # 20 seconds
-            self.state = STATE['level1']
+            self.init_state(STATE['level1'])
         elif self.state == STATE['level1']:
             if key == 's':
                 self.map.save()
             elif key == 'a':
-                if self.start_time == 0:
-                    self.start_time = millis()
+                self.game_clock.resume()
                 self.map.start_move = True
             elif key == 'b':
-                if self.start_time:
-                    self.timeout -= (millis() - self.start_time)
-                    self.start_time = 0
+                self.game_clock.pause()
                 self.map.start_move = False
             elif key_code in [LEFT, RIGHT, DOWN, UP]:
                 self.key_codes[key_code] = True
