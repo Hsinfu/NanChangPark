@@ -2,6 +2,7 @@ from utils import Color, TextSytle, ImgStyle
 
 ### main
 frame_rate = 20
+starting_scores = 100
 get_player_img_method = 'cp'  # or 'scan'
 scanline_cmd = '../tools/scanline'
 player_name_template = 'Player-{:03d}'

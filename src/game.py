@@ -1,5 +1,6 @@
 import layers
 from constant import (
+    starting_scores,
     get_player_img_method,
     scanline_cmd,
     player_name_template,
@@ -54,6 +55,7 @@ class Game:
         self.init_game(state)
 
     def init_game(self, state):
+        self._scores = starting_scores
         self.player_idx += 1
         self.init_map_level1_called = 0
         self.key_codes = {
@@ -71,6 +73,14 @@ class Game:
             self.game_clock = Clock(level1_timeout_millis)
         else:
             self.game_clock = Clock(0)
+
+    @property
+    def scores(self):
+        return self._scores - len(self.map.connection.connects)
+
+    @property
+    def scores_str(self):
+        return '{:08d}'.format(self.scores)
 
     @property
     def player_name(self):
@@ -148,7 +158,7 @@ class Game:
             # score
             layers.pg_start.textSize(level1_score_style.fontsize)
             layers.pg_start.fill(text_color.r, text_color.g, text_color.b)
-            layers.pg_start.text(self.map.score, level1_score_style.x, level1_score_style.y)
+            layers.pg_start.text(self.scores_str, level1_score_style.x, level1_score_style.y)
             # time
             layers.pg_start.textSize(level1_time_style.fontsize)
             layers.pg_start.fill(time_color.r, time_color.g, time_color.b)

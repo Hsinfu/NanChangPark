@@ -196,10 +196,6 @@ class HouseMap:
         self.player = p
         self.player_name = name
 
-    @property
-    def score(self):
-        return '{:08d}'.format(len(self.connection.connects))
-
     def add_person(self, p, max_retry=1000):
         for retry_i in range(max_retry):
             if self.check_init_location_ok(p):
