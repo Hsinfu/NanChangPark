@@ -1,6 +1,6 @@
 import layers
 from constant import default_step, default_img_width, default_img_height
-from utils import random_positive_negative
+from utils import random_positive_negative, sign
 
 class Person:
     def __init__(self, img, w=None, h=None, step=None,
@@ -48,30 +48,26 @@ class Person:
         random_vx, random_vy = self.random_step()
         self.vx = init_vx or random_vx
         self.vy = init_vy or random_vy
-        self.pre_vx = self.vx
-        self.pre_vy = self.vy
-        self.vx_rebound = False
-        self.vy_rebound = False
+        self.vxd = sign(self.vx)
+        self.vyd = sign(self.vy)
+
+    @property
+    def is_rebounded(self):
+        return self.vxd != sign(self.vx) or self.vyd != sign(self.vy)
 
     def move(self):
         self.pre_x = self.x
         self.pre_y = self.y
-        self.pre_vx = self.vx
-        self.pre_vy = self.vy
         self.x += self.vx
         self.y += self.vy
         return self.x, self.y
 
-    def set_vx_rebound(self):
-        self.vx_rebound = True
-
-    def set_vy_rebound(self):
-        self.vy_rebound = True
-
     def apply_rebound(self):
-        if self.vx_rebound:
-            self.vx *= -1
-            self.vx_rebound = False
-        if self.vy_rebound:
-            self.vy *= -1
-            self.vy_rebound = False
+        print('p: ', self.vx, self.vy, self.vxd, self.vyd)
+        v = sqrt(self.vx * self.vx + self.vy * self.vy)
+        vd = sqrt(self.vxd * self.vxd + self.vyd * self.vyd)
+        print('v vd:', v, vd)
+        self.vx = v * self.vxd / vd
+        self.vy = v * self.vyd / vd
+        self.vxd = sign(self.vx)
+        self.vyd = sign(self.vy)

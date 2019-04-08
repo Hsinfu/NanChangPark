@@ -21,7 +21,7 @@ from constant import (
 )
 from person import Person
 from house import HouseMap
-from utils import command_line
+from utils import command_line, sign
 from clock import Clock
 
 STATE = {
@@ -205,13 +205,21 @@ class Game:
             self.init_map_level1()
         elif self.state == STATE['level1']:
             self.map.draw()
+            print('map.draw')
             self.map.move()
+            print('map.move')
             self.map.hit_rebound_player()
+            print('map.hit_rebound_player')
             self.map.hit_rebound_people()
+            print('map.hit_rebound_people')
             self.map.hit_rebound_bg()
+            print('map.hit_rebound_bg')
             self.set_delay_clock()
+            print('set_delay_clock')
             self.set_player_dictection()
+            print('set_player_dictection')
             self.map.apply_rebound()
+            print('map.apply_rebound')
 
     def set_delay_clock(self):
         if self.delay_clock:
@@ -220,42 +228,34 @@ class Game:
             else:
                 self.delay_clock.tick()
         else:
-            if self.map.player.vx_rebound or self.map.player.vy_rebound:
+            if self.map.player.is_rebounded:
                 if self.state == STATE['level1']:
                     self.delay_clock = Clock(level1_hit_delay_millis, enabled=True)
 
     def set_player_dictection(self):
-        dx, dy = 0, 0
-
         # skip while it need rebound or delay_clock exists
-        if self.delay_clock or self.map.player.vx_rebound or self.map.player.vy_rebound:
+        if self.delay_clock or self.map.player.is_rebounded:
+            return
+
+        # if no key pressed return
+        if self.key_codes[LEFT] == self.key_codes[RIGHT] and self.key_codes[DOWN] == self.key_codes[UP]:
             return
 
         # x direction
-        if self.key_codes[LEFT] and not self.key_codes[RIGHT]:
-            dx = -1
+        elif self.key_codes[LEFT] and not self.key_codes[RIGHT]:
+            self.map.player.vxd = -1
         elif not self.key_codes[LEFT] and self.key_codes[RIGHT]:
-            dx = 1
+            self.map.player.vxd = 1
+        else:
+            self.map.player.vxd = 0
 
         # y direction
         if self.key_codes[DOWN] and not self.key_codes[UP]:
-            dy = 1
+            self.map.player.vyd = 1
         elif not self.key_codes[DOWN] and self.key_codes[UP]:
-            dy = -1
-
-        # skip while player keyboard direction is None
-        if dx == 0 and dy == 0:
-            return
-
-        # set the direction and speed
-        vx, vy = self.map.player.vx, self.map.player.vy
-        d = sqrt(dx * dx + dy * dy)
-        v = sqrt(vx * vx + vy * vy)
-        self.map.player.pre_vx = self.map.player.vx
-        self.map.player.pre_vy = self.map.player.vy
-        self.map.player.vx = v * dx / d
-        self.map.player.vy = v * dy / d
-
+            self.map.player.vyd = -1
+        else:
+            self.map.player.vyd = 0
 
     def key_pressed(self, key, key_code):
         # print('key_pressed', key, key_code, self.state)

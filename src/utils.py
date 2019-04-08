@@ -12,3 +12,7 @@ def random_positive_negative():
 # Ex. instruction -> 'ls -al'
 def command_line(instruction):
     subprocess.check_output(instruction, shell=True)
+
+# return 1, -1, 0
+def sign(v):
+    return 0 if v == 0 else int(v / abs(v))

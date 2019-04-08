@@ -8,6 +8,7 @@ from constant import (
     level1_player_name_style,
 )
 from connection import Connection
+from utils import sign
 
 def get_box(p):
     return {
@@ -41,6 +42,7 @@ def is_intersect_map(p, map_wall):
     return False
 
 def get_v_rebound(p1, p2):
+    # return p1_vxd, p2_vxd, p1_vyd, p2_vyd
     if p1.pre_x > p2.pre_x:
         x_dist = p1.pre_x - p2.pre_x - p2.img.width
     else:
@@ -52,36 +54,36 @@ def get_v_rebound(p1, p2):
         y_dist = p2.pre_y - p1.pre_y - p1.img.height
 
     if x_dist < 0 and y_dist < 0:
-        print('get_v_rebound both dist < 0')
-        print('p1 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p1.pre_x, p1.pre_y, p1.pre_vx, p1.pre_vy, p1.x, p1.y, p1.vx, p1.vy))
-        print('p2 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p2.pre_x, p2.pre_y, p2.pre_vx, p2.pre_vy, p2.x, p2.y, p2.vx, p2.vy))
+        print('Error: get_v_rebound both dist < 0')
+        # print('p1 (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p1.pre_x, p1.pre_y, p1.x, p1.y, p1.vx, p1.vy))
+        # print('p2 (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p2.pre_x, p2.pre_y, p2.x, p2.y, p2.vx, p2.vy))
 
     if x_dist < 0:
-        return False, True
+        return sign(p1.vx), sign(p2.vx), -1 * sign(p1.vy), -1 * sign(p2.vy)
 
     if y_dist < 0:
-        return True, False
+        return -1 * sign(p1.vx), -1 * sign(p2.vx), sign(p1.vy), sign(p2.vy)
 
-    x_step = abs(p1.pre_vx - p2.pre_vx)
-    y_step = abs(p1.pre_vy - p2.pre_vy)
+    x_step = abs(p1.vx - p2.vx)
+    y_step = abs(p1.vy - p2.vy)
 
     if x_step == 0:
-        return False, True
+        return sign(p1.vx), sign(p2.vx), -1 * sign(p1.vy), -1 * sign(p2.vy)
     if y_step == 0:
-        return True, False
+        return -1 * sign(p1.vx), -1 * sign(p2.vx), sign(p1.vy), sign(p2.vy)
 
     x_time = x_dist / x_step
     y_time = y_dist / y_step
 
-    print('get_v_rebound both dist >= 0')
-    print('p1 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p1.pre_x, p1.pre_y, p1.pre_vx, p1.pre_vy, p1.x, p1.y, p1.vx, p1.vy))
-    print('p2 (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p2.pre_x, p2.pre_y, p2.pre_vx, p2.pre_vy, p2.x, p2.y, p2.vx, p2.vy))
+    # print('get_v_rebound both dist >= 0')
+    # print('p1 (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p1.pre_x, p1.pre_y, p1.x, p1.y, p1.vx, p1.vy))
+    # print('p2 (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p2.pre_x, p2.pre_y, p2.x, p2.y, p2.vx, p2.vy))
     if x_time > y_time:
-        return True, False
-    return False, True
+        return -1 * sign(p1.vx), -1 * sign(p2.vx), sign(p1.vy), sign(p2.vy)
+    return sign(p1.vx), sign(p2.vx), -1 * sign(p1.vy), -1 * sign(p2.vy)
 
 def get_v_rebound_bg(p, map_wall):
-    # print('p (pre_x: {}, pre_y: {}, pre_vx: {}, pre_vy: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p.pre_x, p.pre_y, p.pre_vx, p.pre_vy, p.x, p.y, p.vx, p.vy))
+    # print('p (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p.pre_x, p.pre_y, p.x, p.y, p.vx, p.vy))
 
     b = get_box(p)
 
@@ -111,34 +113,34 @@ def get_v_rebound_bg(p, map_wall):
 
     # print('collision', x_collision, y_collision)
 
-    if p.pre_vx > 0:
+    if p.vx > 0:
         x_dist = x_collision - (p.pre_x + p.img.width)
     else:
         x_dist = p.pre_x - x_collision
 
-    if p.pre_vy > 0:
+    if p.vy > 0:
         y_dist = y_collision - (p.pre_y + p.img.height)
     else:
         y_dist = p.pre_y - y_collision
 
     if x_dist < 0 and y_dist < 0:
-        print('both dist < 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}), pre_v: ({}, {})'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist, p.pre_vx, p.pre_vy))
-        return True, True
+        print('both dist < 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}))'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist))
+        return -1 * sign(p.vx), -1 * sign(p.vy)
 
     if x_dist < 0:
-        return False, True
+        return sign(p.vx), -1 * sign(p.vy)
 
     if y_dist < 0:
-        return True, False
+        return -1 * sign(p.vx), sign(p.vy)
 
-    x_time = x_dist / abs(p.pre_vx)
-    y_time = y_dist / abs(p.pre_vy)
+    x_time = x_dist / abs(p.vx)
+    y_time = y_dist / abs(p.vy)
 
-    print('both dist >= 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}), pre_v: ({}, {}), time: ({}, {})'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist, p.pre_vx, p.pre_vy, x_time, y_time))
+    print('both dist >= 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}), time: ({}, {})'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist, x_time, y_time))
 
     if x_time > y_time:
-        return True, False
-    return False, True
+        return -1 * sign(p.vx), sign(p.vy)
+    return sign(p.vx), -1 * sign(p.vy)
 
 
 class HouseMap:
@@ -261,13 +263,7 @@ class HouseMap:
     def _hit_rebound_people(self, p, people, should_connect=False):
         for pi in people:
             if is_intersect(p, pi):
-                vx_re, vy_re = get_v_rebound(p, pi)
-                if vx_re:
-                    pi.set_vx_rebound()
-                    p.set_vx_rebound()
-                if vy_re:
-                    pi.set_vy_rebound()
-                    p.set_vy_rebound()
+                p.vxd, pi.vxd, p.vyd, pi.vyd = get_v_rebound(p, pi)
                 if should_connect:
                     self.connect(p, pi)
 
@@ -282,11 +278,7 @@ class HouseMap:
 
     def _hit_rebound_bg(self, p):
         if self.is_overlap_bg(p):
-            vx_re, vy_re = get_v_rebound_bg(p, self.map_wall)
-            if vx_re:
-                p.set_vx_rebound()
-            if vy_re:
-                p.set_vy_rebound()
+            p.vxd, p.vyd = get_v_rebound_bg(p, self.map_wall)
 
     def hit_rebound_bg(self):
         if self.player:
