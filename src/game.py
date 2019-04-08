@@ -210,8 +210,7 @@ class Game:
             self.map.hit_rebound_people()
             self.map.hit_rebound_bg()
             self.set_delay_clock()
-            if self.delay_clock is None:
-                self.set_player_dictection()
+            self.set_player_dictection()
             self.map.apply_rebound()
 
     def set_delay_clock(self):
@@ -226,31 +225,37 @@ class Game:
                     self.delay_clock = Clock(level1_hit_delay_millis, enabled=True)
 
     def set_player_dictection(self):
-        def reverse_vx():
-            if not self.map.player.vx_rebound:
-                self.map.player.pre_vx = self.map.player.vx
-                self.map.player.vx *= -1
+        dx, dy = 0, 0
 
-        def reverse_vy():
-            if not self.map.player.vy_rebound:
-                self.map.player.pre_vy = self.map.player.vy
-                self.map.player.vy *= -1
+        # skip while it need rebound or delay_clock exists
+        if self.delay_clock or self.map.player.vx_rebound or self.map.player.vy_rebound:
+            return
 
         # x direction
-        if self.key_codes[LEFT] and self.key_codes[RIGHT]:
-            pass
-        elif self.key_codes[LEFT] and self.map.player.vx > 0:
-            reverse_vx()
-        elif self.key_codes[RIGHT] and self.map.player.vx < 0:
-            reverse_vx()
+        if self.key_codes[LEFT] and not self.key_codes[RIGHT]:
+            dx = -1
+        elif not self.key_codes[LEFT] and self.key_codes[RIGHT]:
+            dx = 1
 
         # y direction
-        if self.key_codes[DOWN] and self.key_codes[UP]:
-            pass
-        elif self.key_codes[DOWN] and self.map.player.vy < 0:
-            reverse_vy()
-        elif self.key_codes[UP] and self.map.player.vy > 0:
-            reverse_vy()
+        if self.key_codes[DOWN] and not self.key_codes[UP]:
+            dy = 1
+        elif not self.key_codes[DOWN] and self.key_codes[UP]:
+            dy = -1
+
+        # skip while player keyboard direction is None
+        if dx == 0 and dy == 0:
+            return
+
+        # set the direction and speed
+        vx, vy = self.map.player.vx, self.map.player.vy
+        d = sqrt(dx * dx + dy * dy)
+        v = sqrt(vx * vx + vy * vy)
+        self.map.player.pre_vx = self.map.player.vx
+        self.map.player.pre_vy = self.map.player.vy
+        self.map.player.vx = v * dx / d
+        self.map.player.vy = v * dy / d
+
 
     def key_pressed(self, key, key_code):
         # print('key_pressed', key, key_code, self.state)
