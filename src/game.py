@@ -12,20 +12,19 @@ from constant import (
     PLAYERS_DIR,
     IMAGES_DIR,
     game_title,
-    scanline_cmd,
+    SCANLINE_CMD,
     screen_size,
     frame_rate,
     starting_scores,
     get_player_img_method,
-    cp_sources_dir,
-    player_img_dir,
-    player_img_ext,
+    CP_SOURCES_DIR,
+    PLAYERS_IMG_DIR,
+    PLAYER_IMG_EXT,
     confirm_img_style,
 )
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)-15s:%(levelname)s:%(name)s:%(message)s')
 logger = logging.getLogger(__name__)
-
 
 pg.init()
 pg.display.set_caption(game_title)
@@ -38,7 +37,6 @@ surface_flags = pg.HWACCEL | pg.HWSURFACE
 surface = pg.Surface(screen.get_size(), flags=surface_flags).convert()
 clock = pg.time.Clock()
 
-EMPTY_COLOR = pg.Color(0, 0, 0, 0)
 
 def load_img(fname, img_dir=IMAGES_DIR, size=None):
     fpath = os.path.join(img_dir, fname)
@@ -155,6 +153,9 @@ class ConfirmStage(Stage):
 
 class Level(Stage):
     def __init__(self):
+        self.states = ['intro', 'playing']
+        self.state_idx = 0
+
         pass
 
 class Level1(Level):
@@ -208,17 +209,17 @@ class Game:
 
     @property
     def player_img_fpath(self):
-        fname = '{}.{}'.format(self.player_name, player_img_ext)
-        return os.path.join(player_img_dir, fname)
+        fname = '{}.{}'.format(self.player_name, PLAYER_IMG_EXT)
+        return os.path.join(PLAYERS_IMG_DIR, fname)
 
     def cp(self):
         i = random.randrange(1, 8)
-        f = '{}/man{:02d}.png'.format(cp_sources_dir, i)
+        f = '{}/man{:02d}.png'.format(CP_SOURCES_DIR, i)
         command_line('cp {} {}'.format(f, self.player_img_fpath))
 
     def scan(self):
         command_line('{} -verbose -flatbed -a4 -jpeg -dir {} -name {}'.format(
-            scanline_cmd, player_img_dir, self.player_name))
+            SCANLINE_CMD, PLAYERS_IMG_DIR, self.player_name))
 
     @property
     def player_img(self):
