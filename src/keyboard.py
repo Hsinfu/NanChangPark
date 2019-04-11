@@ -2,6 +2,9 @@ import pygame as pg
 
 class Keyboard:
     def __init__(self):
+        self.reset_keys()
+
+    def reset_keys(self):
         self.keys = {
             pg.K_ESCAPE: False,
             pg.K_LEFT: False,
