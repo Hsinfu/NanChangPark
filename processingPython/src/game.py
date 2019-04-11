@@ -24,6 +24,8 @@ from house import HouseMap
 from utils import command_line, sign
 from clock import Clock
 
+
+
 STATE = {
     'welcome': 0,
     'scan': 0.1,

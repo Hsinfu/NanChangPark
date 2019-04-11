@@ -107,6 +107,11 @@ venv.bak/
 # mac
 .DS_Store
 
-# skip player image
-img/players/
+# skip players
+players/
 
+# skip processingPython/
+processingPython/
+
+# vscode
+.vscode
