@@ -107,11 +107,15 @@ venv.bak/
 # mac
 .DS_Store
 
+# vscode
+.vscode
+
 # skip players
 players/
 
 # skip processingPython/
 processingPython/
 
-# vscode
-.vscode
+# skip record
+./record.json
+
