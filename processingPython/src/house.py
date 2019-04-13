@@ -177,7 +177,7 @@ class HouseMap:
             self.top_img = top_img
 
     def is_overley_player(self, p):
-        is_intersect(self.player, p)
+        return is_intersect(self.player, p)
 
     def is_overlap_current_people(self, p):
         return is_intersect_people(p, self.people)
