@@ -2,16 +2,32 @@ import os
 import logging
 import random
 import subprocess
+import pygame as pg
 from constant import (
     get_player_img_method,
+    screen_size,
     SCANLINE_CMD,
     CP_SOURCES_DIR,
     PLAYERS_IMG_DIR,
     PLAYER_IMG_EXT,
+    IMAGES_DIR,
 )
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)-15s:%(levelname)s:%(name)s:%(message)s')
 logger = logging.getLogger(__name__)
+
+
+def random_positive_negative():
+    return 1 if random.random(1) > 0.5 else -1
+
+
+def sign(v):
+    if v == 0:
+        return 0
+    elif v > 0:
+        return 1
+    else:
+        return -1
 
 
 # Ex. instruction -> 'ls -al'
@@ -44,3 +60,18 @@ def do_scan(player_name):
     else:
         logger.error('get_player_img_method error')
         raise Exception
+
+
+def load_img(fname, img_dir=IMAGES_DIR, size=screen_size):
+    fpath = os.path.join(img_dir, fname)
+    img = pg.image.load(fpath)
+    if size:
+        img = pg.transform.scale(img, size)
+    img = img.convert_alpha()
+    return img
+
+
+def load_imgs(dir_name, count=48, size=screen_size):
+    def get_fname(i):
+        return os.path.join(dir_name, '{:05d}.png'.format(i))
+    return [load_img(get_fname(i)) for i in range(count)]

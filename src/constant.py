@@ -6,14 +6,13 @@ from collections import namedtuple
 TextSytle = namedtuple('TextSytle', ['fontsize', 'x', 'y'])
 BoxStyle = namedtuple('BoxStyle', ['width', 'height', 'x', 'y'])
 LocationStyle = namedtuple('LocationStyle', ['x', 'y'])
-
+SizeStyle = namedtuple('SizeStyle', ['width', 'height'])
 
 ### Static Path
 THIS_FILE_DIR = os.path.dirname(__file__)
 INSTAGRAM_ACCOUNT_PATH = os.path.abspath(os.path.join(THIS_FILE_DIR, '../instagram_account.json'))
 GAME_RECORDS_PATH = os.path.abspath(os.path.join(THIS_FILE_DIR, '../record.json'))
 IMAGES_DIR = os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/'))
-PLAYERS_DIR = os.path.abspath(os.path.join(THIS_FILE_DIR, '../players/'))
 SCANLINE_CMD = os.path.abspath(os.path.join(THIS_FILE_DIR, '../tools/scanline'))
 CP_SOURCES_DIR = os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1'))
 PLAYERS_IMG_DIR = os.path.abspath(os.path.join(THIS_FILE_DIR, '../players'))
@@ -34,14 +33,6 @@ empty_color = pg.Color(0, 0, 0, 0)
 text_color = pg.Color(255, 255, 255)
 time_color = pg.Color(117, 249, 76)
 
-# connection
-max_connections = 15
-max_connections_per_collision = 5
-
-# person
-default_step = 5
-default_img_width, default_img_height = 32, 44
-
 # layout
 screen_size = [1440, 900]
 layout_settings = {
@@ -52,7 +43,7 @@ layout_settings = {
         'name': TextSytle(fontsize=24, x=165, y=54),
         'score': TextSytle(fontsize=24, x=1153, y=54),
         'time': TextSytle(fontsize=24, x=697, y=72),
-        'map': BoxStyle(width=1240, height=650, x=100, y=200)
+        'viewbox': BoxStyle(width=1240, height=650, x=100, y=200)
     },
 }
 
@@ -63,10 +54,21 @@ viewbox_settings = {
     },
 }
 
+connection_settings = {
+    'max_num': 15,
+    'max_num_per_collision': 5,
+}
+
 house_settings = {
+    'map_size': SizeStyle(width=4485, height=3968),
+    'img_size': SizeStyle(width=32, height=44),
+    'step': 5,
     'level1': {
+        'game_time': 20 * 1000,  # 20 seconds
+        'hit_delay': 1 * 1000,  # 1 second
         'player_name_location': TextSytle(fontsize=12, x=-17, y=-10),
-        'player_box': BoxStyle(width=default_img_width, height=default_img_height, x=200, y=300),
+        'player_img_size': SizeStyle(width=32, height=44),
+        'player_img_location': LocationStyle(x=200, y=300),
         'people': [
             {
                 'frame_idx': 0,
