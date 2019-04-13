@@ -1,6 +1,12 @@
 import os
 import pygame as pg
-from utils import TextSytle, ImgStyle, LocationStyle
+from collections import namedtuple
+
+
+TextSytle = namedtuple('TextSytle', ['fontsize', 'x', 'y'])
+BoxStyle = namedtuple('BoxStyle', ['width', 'height', 'x', 'y'])
+LocationStyle = namedtuple('LocationStyle', ['x', 'y'])
+
 
 ### Static Path
 THIS_FILE_DIR = os.path.dirname(__file__)
@@ -15,12 +21,8 @@ PLAYER_IMG_EXT = 'jpeg'
 
 ### General
 game_title = 'NanChangPark Never Lock'
-screen_size = [1440, 900]
 frame_rate = 24
 get_player_img_method = 'cp'  # or 'scan'
-
-# scan player img
-confirm_img_style = ImgStyle(width=407, height=620, x=516, y=100)
 
 
 ### game
@@ -40,11 +42,74 @@ max_connections_per_collision = 5
 default_step = 5
 default_img_width, default_img_height = 32, 44
 
-# general level
-level_name_style = TextSytle(fontsize=24, x=165, y=54)
-level_score_style = TextSytle(fontsize=24, x=1153, y=54)
-level_time_style = TextSytle(fontsize=24, x=697, y=72)
-level_player_name_style = TextSytle(fontsize=12, x=-17, y=-10)
+# layout
+screen_size = [1440, 900]
+layout_settings = {
+    'confirm': {
+        'img': BoxStyle(width=407, height=620, x=516, y=100)
+    },
+    'level': {
+        'name': TextSytle(fontsize=24, x=165, y=54),
+        'score': TextSytle(fontsize=24, x=1153, y=54),
+        'time': TextSytle(fontsize=24, x=697, y=72),
+        'map': BoxStyle(width=1240, height=650, x=100, y=200)
+    },
+}
 
-# level1
-level1_player_location = LocationStyle(x=800, y=700)
+viewbox_settings = {
+    'level1': {
+        'is_static': True,
+        'viewbox': [1500, 2700, 1200, 1900]
+    },
+}
+
+house_settings = {
+    'level1': {
+        'player_name_location': TextSytle(fontsize=12, x=-17, y=-10),
+        'player_box': BoxStyle(width=default_img_width, height=default_img_height, x=200, y=300),
+        'people': [
+            {
+                'frame_idx': 0,
+                'added': False,
+                'location': None,
+                'img': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man01.png')),
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'location': None,
+                'img': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man02.png')),
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'location': None,
+                'img': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man03.png')),
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'location': None,
+                'img': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man04.png')),
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'location': None,
+                'img': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man05.png')),
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'location': None,
+                'img': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man06.png')),
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'location': None,
+                'img': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man07.png')),
+            },
+        ]
+    },
+}
