@@ -116,6 +116,7 @@ players/
 # skip processingPython/
 processingPython/
 
-# skip record
+# skip record and instagram account info
 ./record.json
+./instagram_account.json
 

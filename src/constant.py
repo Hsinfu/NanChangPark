@@ -4,6 +4,7 @@ from utils import TextSytle, ImgStyle, LocationStyle
 
 ### Static Path
 THIS_FILE_DIR = os.path.dirname(__file__)
+INSTAGRAM_ACCOUNT_PATH = os.path.abspath(os.path.join(THIS_FILE_DIR, '../instagram_account.json'))
 GAME_RECORDS_PATH = os.path.abspath(os.path.join(THIS_FILE_DIR, '../record.json'))
 IMAGES_DIR = os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/'))
 PLAYERS_DIR = os.path.abspath(os.path.join(THIS_FILE_DIR, '../players/'))
