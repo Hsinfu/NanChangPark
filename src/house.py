@@ -19,6 +19,7 @@ def get_box(p):
         'right': p.x + p.img.width,
     }
 
+
 def is_intersect(p1, p2):
     r1, r2 = get_box(p1), get_box(p2)
     return not (
@@ -28,11 +29,13 @@ def is_intersect(p1, p2):
         r1['bottom'] > r2['top']
     )
 
+
 def is_intersect_people(p, people):
     for pi in people:
         if is_intersect(p, pi):
             return True
     return False
+
 
 def is_intersect_map(p, map_wall):
     b = get_box(p)
@@ -41,6 +44,7 @@ def is_intersect_map(p, map_wall):
             if map_wall[wi][hi] == 1:
                 return True
     return False
+
 
 def get_v_rebound(p1, p2):
     # return p1_vxd, p2_vxd, p1_vyd, p2_vyd
