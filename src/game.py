@@ -71,6 +71,10 @@ class Frame:
     def img(self):
         return self.imgs[self.idx]
 
+    @property
+    def is_last_frame(self):
+        return self.idx == self.num - 1
+
     def move(self):
         self.idx += 1
         self.idx %= self.num
@@ -117,8 +121,8 @@ class ScanStage(Stage):
 
 
 class LoadingStage(Stage):
-    def __init__(self):
-        self.is_end = False
+    def __init__(self, is_end=False):
+        self.is_end = is_end
         self.ball_frames = Frame(surface, load_imgs('loading/ball'))
 
     def set_end(self):
@@ -126,7 +130,7 @@ class LoadingStage(Stage):
 
     def tick(self, keyboard):
         self.ball_frames.tick()
-        if self.is_end:
+        if self.is_end and self.ball_frames.is_last_frame:
             keyboard.reset_keys()
             return ['next_stage']
         return []
@@ -151,57 +155,104 @@ class ConfirmStage(Stage):
         return []
 
 
-class Level(Stage):
-    def __init__(self):
-        self.states = ['intro', 'playing']
-        self.state_idx = 0
-
-        pass
-
-class Level1(Level):
-    def __init__(self):
-        pass
+class IntroStage(Stage):
+    def __init__(self, introX):
+        self.description_frames = Frame(surface, [load_img('{}/description.png'.format(introX))])
+        self.press_a_frames = Frame(surface, load_imgs('{}/press_a'.format(introX)))
 
     def tick(self, keyboard):
+        self.description_frames.tick()
+        self.press_a_frames.tick()
+        if keyboard.is_pressed(pg.K_a):
+            keyboard.reset_keys()
+            return ['next_stage']
         return []
 
 
-class Game:
+class Level(Stage):
+    def __init__(self, levelX):
+        self.start_frames = Frame(surface, load_imgs('{}/start'.format(levelX), 96))
+        self.end_frames = Frame(surface, load_imgs('{}/end'.format(levelX), 96))
+
+    def tick(self, keyboard):
+        if not self.start_frames.is_last_frame:
+            self.map.draw()
+            self.start_frames.tick()
+            keyboard.reset_keys()
+            return []
+        self.map.set_start()
+        time_remain = self.map.tick()
+        if time_remain < 3:
+            end_frames_idx = int((3 - time_remain) * 24)
+            if end_frames_idx >= 95:
+                return 'next_stage'
+            self.end_frames.idx = end_frames_idx
+            self.end_frames.draw()
+        return []
+
+
+class Level1(Level):
+    def __init__(self):
+        super().__init__('level1')
+
+    # def tick(self, keyboard):
+    #     return []
+
+
+class Stages:
+    def __init__(self, states, stages):
+        self._states = states
+        self._stages = stages
+        self.state_idx = 0
+        pass
+
+    @property
+    def num_states(self):
+        return len(self._states)
+
+    @property
+    def state(self):
+        return self._states[self.state_idx]
+
+    @property
+    def stage(self):
+        return self._stages[self.state]
+
+    def change_stage(self):
+        if self.num_states == 0:
+            return
+        self.state_idx += 1
+        self.state_idx %= self.num_states
+
+
+
+class Game(Stages):
     def __init__(self, player_name):
         self.player_name = player_name
         self._player_img = None
         self.bg_frames = Frame(surface, load_imgs('bg'))
         self.bar_frames = Frame(surface, load_imgs('bar'))
         self._scores = starting_scores
-        self.states = [
-            'welcome',
-            'scan',
-            'loading',
-            'confirm',
-            'level1',
-            # 'level2',
-            # 'level3',
-        ]
-        self.state_idx = 0
-        self.stages = {
-            'welcome': WelcomeStage(),
-            'scan': ScanStage(),
-            'loading': LoadingStage(),
-            'confirm': ConfirmStage(),
-            'level1': Level1(),
-        }
-
-    def change_stage(self):
-        self.state_idx += 1
-        self.state_idx %= len(self.states)
-
-    @property
-    def state(self):
-        return self.states[self.state_idx]
-
-    @property
-    def stage(self):
-        return self.stages[self.state]
+        super().__init__(
+            states=[
+                'welcome',
+                'scan',
+                'loading',
+                'confirm',
+                'intro1',
+                'level1',
+                # 'level2',
+                # 'level3',
+            ],
+            stages={
+                'welcome': WelcomeStage(),
+                'scan': ScanStage(),
+                'loading': LoadingStage(),
+                'confirm': ConfirmStage(),
+                'intro1': IntroStage('intro1'),
+                'level1': Level1(),
+            },
+        )
 
     @property
     def is_playing_stage(self):
