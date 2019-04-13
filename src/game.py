@@ -155,17 +155,26 @@ class RankGame:
 
     def start(self):
         while True:
+            # get pygame events
             events = pg.event.get()
             logger.debug('events: {}'.format(events))
+
+            # update keyboard
             self.keyboard.update(events)
             logger.debug('keyboard: {}'.format(self.keyboard.keys))
 
+            # exit while player close the pygame display window
             if any([e.type == pg.QUIT for e in events]):
                 break
+            # exit while player click esc
             if self.keyboard.is_pressed(pg.K_ESCAPE):
                 break
+
+            # tick
             self.tick(self.keyboard)
+            # refresh pygame display
             pg.display.flip()
+            # delay 1/frame_rate time by pygame clock
             g_var.pg_clock.tick(frame_rate)
 
 
