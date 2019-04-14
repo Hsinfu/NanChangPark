@@ -46,6 +46,13 @@ class Connection:
             x_max = max(positions[0][0], positions[1][0])
             y_min = min(positions[0][1], positions[1][1])
             y_max = max(positions[0][1], positions[1][1])
+
+            if x_max < area.x or x_min > area.x + area.width:
+                continue
+
+            if y_max < area.y or y_min > area.y + area.height:
+                continue
+
             A = np.array(positions)
             B = np.array([1, 1])
             a, b = np.linalg.solve(A, B)
