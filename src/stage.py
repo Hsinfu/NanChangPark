@@ -142,7 +142,8 @@ class Viewbox(Stage):
     def draw_time(self):
         font_style = layout_settings['level']['time_font']
         time_font = pg.font.SysFont('arial', font_style.fontsize)
-        time_surface = time_font.render(self.house.game_clock.time_left_str, True, font_style.color)
+        time_str = '{:02.2f}'.format(max(self.house.game_clock.time_left, 0))
+        time_surface = time_font.render(time_str, True, font_style.color)
         g_var.surface.blit(time_surface, (font_style.x, font_style.y))
 
     def draw_score(self):

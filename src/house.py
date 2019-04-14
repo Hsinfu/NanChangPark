@@ -263,7 +263,6 @@ class House:
         return False
 
     def move(self):
-        self.game_clock.resume()
         if self.player:
             self.player.move()
         for p in self.people:
@@ -338,10 +337,11 @@ class House:
             self.player.vyd = 0
 
     def next(self, keyboard):
+        self.game_clock.resume()
+        self.game_clock.tick()
         if self.game_clock.time_left < 0:
             return
         self.move()
-        self.game_clock.tick()
         self.hit_rebound_player()
         self.hit_rebound_people()
         self.hit_rebound_map()

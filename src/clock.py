@@ -15,12 +15,8 @@ class Clock:
     def enabled(self):
         return self.start is not None
 
-    @property
-    def time_left_str(self):
-        return '{:02.2f}'.format(self.time_left)
-
     def is_timeout(self, t=0):
-        return self.time_left < t
+        return self.time_left <= t
 
     def pause(self):
         if self.enabled:
