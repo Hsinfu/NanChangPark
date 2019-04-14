@@ -31,13 +31,13 @@ game_settings = {
 # layout
 layout_settings = {
     'confirm': {
-        'img': BoxStyle(x=516, y=100, width=407, height=530)
+        'img': BoxStyle(x=524, y=100, width=390, height=540)
     },
     'level': {
         # 'name': TextSytle(fontsize=24, x=165, y=54),
         'score_font': TextSytle(x=1205, y=72, fontsize=42, color=pg.Color(255, 255, 255)),
         'time_font': TextSytle(x=660, y=80, fontsize=48, color=pg.Color(117, 249, 76)),
-        'viewbox_location': LocationStyle(x=50, y=155),
+        'viewbox_location': LocationStyle(x=48, y=141),
         'hit_shake_range': 10,
     },
 }
@@ -45,73 +45,73 @@ layout_settings = {
 viewbox_settings = {
     'level1': {
         'is_static': True,
-        'viewbox_area': BoxStyle(x=864, y=803, width=1345, height=610)
+        'viewbox_area': BoxStyle(x=778, y=846, width=1345, height=628)
     },
 }
 
 connection_settings = {
     'max_num': 15,
     'max_num_per_collision': 5,
-    'line_width': 1,
+    'line_width': 3,
 }
 
 house_settings = {
-    'map_size': SizeStyle(width=3028, height=2680),
+    'map_size': SizeStyle(width=2575, height=2279),
     'img_size': SizeStyle(width=110, height=150),
-    'step': 5,
-    'blank_color': pg.Color(0, 0, 0, 0),
+    'step': 20,
+    'blank_color': pg.Color(255, 255, 255, 255),
     'level1': {
         'game_time': 20,  # 20 seconds
         'hit_delay': 1,  # 1 second
         'player_name_font': TextSytle(x=-17, y=-10, fontsize=12, color=pg.Color(255, 255, 255)),
-        'player_img_box': BoxStyle(x=800, y=1400, width=110, height=150),
+        'player_img_box': BoxStyle(x=1282, y=879, width=110, height=150),
         'people': [
             {
                 'frame_idx': 0,
                 'added': False,
-                'img_location': LocationStyle(x=850, y=1450),
+                'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
                 'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man01.png')),
             },
             {
-                'frame_idx': 0,
+                'frame_idx': game_settings['frame_rate'] * 1,
                 'added': False,
-                'img_location': None,
+                'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
                 'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man02.png')),
             },
             {
-                'frame_idx': 0,
+                'frame_idx': game_settings['frame_rate'] * 2,
                 'added': False,
-                'img_location': None,
+                'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
                 'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man03.png')),
             },
             {
-                'frame_idx': 0,
+                'frame_idx': game_settings['frame_rate'] * 3,
                 'added': False,
-                'img_location': None,
+                'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
                 'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man04.png')),
             },
             {
-                'frame_idx': 0,
+                'frame_idx': game_settings['frame_rate'] * 4,
                 'added': False,
-                'img_location': None,
+                'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
                 'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man05.png')),
             },
             {
-                'frame_idx': 0,
+                'frame_idx': game_settings['frame_rate'] * 5,
                 'added': False,
-                'img_location': None,
+                'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
                 'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man06.png')),
             },
             {
-                'frame_idx': 0,
+                'frame_idx': game_settings['frame_rate'] * 6,
                 'added': False,
-                'img_location': None,
+                'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
                 'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man07.png')),
             },
