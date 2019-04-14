@@ -24,7 +24,7 @@ game_settings = {
     'game_title': 'NanChangPark Never Lock',
     'frame_rate': 24,
     'starting_scores': 100,
-    'get_player_img_method': 'cp',  # or 'scan'
+    'get_player_img_method': 'scan',  # or 'scan'
     'screen_size': SizeStyle(width=1440, height=810),
 }
 

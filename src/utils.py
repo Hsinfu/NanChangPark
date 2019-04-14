@@ -31,7 +31,8 @@ def sign(v):
 
 # Ex. instruction -> 'ls -al'
 def command_line(instruction):
-    subprocess.check_output(instruction, shell=True)
+    subprocess.Popen([instruction], shell=True,
+        stdin=None, stdout=None, stderr=None, close_fds=True)
 
 
 def get_player_img_fpath(player_name):
@@ -42,7 +43,12 @@ def get_player_img_fpath(player_name):
 def cp(player_name):
     i = random.randrange(1, 8)
     f = '{}/man{:02d}.png'.format(CP_SOURCES_DIR, i)
-    command_line('cp {} {}'.format(f, get_player_img_fpath(player_name)))
+    command_line('cp -f {} {}'.format(f, get_player_img_fpath(player_name)))
+
+
+def rm(player_name):
+    img_fpath = get_player_img_fpath(player_name)
+    command_line('rm -f {}'.format(img_fpath))
 
 
 def scan(player_name):
@@ -53,6 +59,7 @@ def scan(player_name):
 
 def do_scan(player_name):
     m = game_settings['get_player_img_method']
+    rm(player_name)
     if m == 'cp':
         cp(player_name)
     elif m == 'scan':

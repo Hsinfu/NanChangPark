@@ -82,7 +82,9 @@ class ConfirmStage(Stage):
     @property
     def player_frames(self):
         if self._player_frames is None:
-            self._player_frames = Frame(g_var.surface, [self.get_player_img()])
+            img = self.get_player_img()
+            if img:
+                self._player_frames = Frame(g_var.surface, [img])
         return self._player_frames
 
     def get_player_img(self):
