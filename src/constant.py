@@ -123,4 +123,22 @@ house_settings = {
             },
         ]
     },
+    'level2': {
+        'game_time': 40,  # 40 seconds
+        'hit_delay': 0.5,  # 0.5 second
+        'player_name_font': TextSytle(x=-17, y=-10, fontsize=12, color=pg.Color(255, 255, 255)),
+        'player_img_box': BoxStyle(x=719, y=382, width=110, height=150),
+        'people': [
+
+        ],
+    },
+    'level3': {
+        'game_time': 40,  # 40 seconds
+        'hit_delay': 0.5,  # 0.5 second
+        'player_name_font': TextSytle(x=-17, y=-10, fontsize=12, color=pg.Color(255, 255, 255)),
+        'player_img_box': BoxStyle(x=843, y=1650, width=110, height=150),
+        'people': [
+
+        ],
+    },
 }
