@@ -1,10 +1,17 @@
+import random
 import pygame as pg
 
 import g_var
-from constant import layout_settings, viewbox_settings
+from constant import BoxStyle, layout_settings, viewbox_settings
 from frame import Frame
 from house import House
-from utils import do_scan, load_img, load_imgs, get_player_img_fpath
+from utils import (
+    do_scan,
+    load_img,
+    load_imgs,
+    get_player_img_fpath,
+    random_positive_negative,
+)
 
 
 class Stage:
@@ -124,8 +131,18 @@ class Viewbox(Stage):
         viewbox_setting = viewbox_settings[levelX]
         self.is_static = viewbox_setting['is_static']
         self.viewbox_location = layout_settings['level']['viewbox_location']
-        self.viewbox_area = viewbox_setting['viewbox_area']
+        self.shake_range = layout_settings['level']['hit_shake_range']
+        self._viewbox_area = viewbox_setting['viewbox_area']
         self.house = House(levelX, player_name)
+
+    @property
+    def viewbox_area(self):
+        if not self.house.is_delay:
+            return self._viewbox_area
+        a = self._viewbox_area
+        shake_x = random_positive_negative() * random.randrange(self.shake_range)
+        shake_y = random_positive_negative() * random.randrange(self.shake_range)
+        return BoxStyle(x=a.x+shake_x, y=a.y+shake_y, width=a.width, height=a.height)
 
     def update(self):
         # TODO: update viewbox by self.house.player
@@ -135,9 +152,6 @@ class Viewbox(Stage):
         self.house.next(keyboard)
         if not self.is_static:
             self.update()
-        if self.house.is_delay:
-            # TODO: random change the viewbox to simulate collision
-            pass
 
     def draw_time(self):
         font_style = layout_settings['level']['time_font']

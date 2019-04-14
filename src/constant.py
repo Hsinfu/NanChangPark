@@ -37,7 +37,8 @@ layout_settings = {
         # 'name': TextSytle(fontsize=24, x=165, y=54),
         'score_font': TextSytle(x=1205, y=72, fontsize=42, color=pg.Color(255, 255, 255)),
         'time_font': TextSytle(x=660, y=80, fontsize=48, color=pg.Color(117, 249, 76)),
-        'viewbox_location': LocationStyle(x=50, y=155)
+        'viewbox_location': LocationStyle(x=50, y=155),
+        'hit_shake_range': 10,
     },
 }
 
