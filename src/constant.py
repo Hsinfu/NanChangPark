@@ -40,6 +40,12 @@ layout_settings = {
         'viewbox_location': LocationStyle(x=48, y=141),
         'hit_shake_range': 5,
     },
+    'rank': {
+        'player_box': BoxStyle(x=66, y=96, width=369, height=507),
+        'rank1': BoxStyle(x=386, y=246, width=259, height=356),
+        'rank2': BoxStyle(x=616, y=246, width=259, height=356),
+        'rank3': BoxStyle(x=835, y=246, width=259, height=356),
+    },
 }
 
 viewbox_settings = {
