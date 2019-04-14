@@ -185,7 +185,6 @@ def main():
     # init pygame surface
     surface_flags = pg.HWACCEL | pg.HWSURFACE
     g_var.surface = pg.Surface(g_var.screen.get_size(), flags=surface_flags).convert()
-    g_var.map_surface = pg.Surface(tuple(house_settings['map_size']), flags=surface_flags).convert()
 
     # init pygame clock
     g_var.pg_clock = pg.time.Clock()

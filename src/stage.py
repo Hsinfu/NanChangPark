@@ -143,7 +143,6 @@ class Viewbox(Stage):
 
     def draw(self):
         self.house.draw(self.viewbox_location, self.viewbox_area)
-        # g_var.surface.blit(g_var.map_surface, self.viewbox_location, self.viewbox_area)
 
     def tick(self, keyboard):
         self.draw()
