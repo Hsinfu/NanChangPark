@@ -39,14 +39,14 @@ layout_settings = {
         'score_color': pg.Color(255, 255, 255),
         'time': TextSytle(fontsize=24, x=697, y=72),
         'time_color': pg.Color(117, 249, 76),
-        'viewbox_location': LocationStyle(x=100, y=250)
+        'viewbox_location': LocationStyle(x=50, y=155)
     },
 }
 
 viewbox_settings = {
     'level1': {
         'is_static': True,
-        'viewbox_area': [1500, 2700, 1200, 1900]
+        'viewbox_area': [1500, 2700, 1345, 700]
     },
 }
 

@@ -151,16 +151,19 @@ class Viewbox(Stage):
 class Level(Stage):
     def __init__(self, levelX, player_name):
         self.viewbox = Viewbox(levelX, player_name)
+        self.box_frames = Frame(g_var.surface, [load_img('{}/box.png'.format(levelX))])
         self.start_frames = Frame(g_var.surface, load_imgs('{}/start'.format(levelX), 96))
         self.end_frames = Frame(g_var.surface, load_imgs('{}/end'.format(levelX), 96))
 
     def tick(self, keyboard):
         if not self.start_frames.is_last_frame:
             self.viewbox.draw()
+            self.box_frames.tick()
             self.start_frames.tick()
             keyboard.reset_keys()
             return False
         time_remain = self.viewbox.tick(keyboard)
+        self.box_frames.tick()
         if time_remain < 3:
             end_frames_idx = int((3 - time_remain) * 24)
             if end_frames_idx >= 95:
