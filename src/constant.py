@@ -67,8 +67,8 @@ house_settings = {
     'step': 20,
     'blank_color': pg.Color(255, 255, 255, 255),
     'level1': {
-        'game_time': 20,  # 20 seconds
-        'hit_delay': 1,  # 1 second
+        'game_time': 40,  # 40 seconds
+        'hit_delay': 0.5,  # 0.5 second
         'player_name_font': TextSytle(x=-17, y=-10, fontsize=12, color=pg.Color(255, 255, 255)),
         'player_img_box': BoxStyle(x=1282, y=879, width=110, height=150),
         'people': [
