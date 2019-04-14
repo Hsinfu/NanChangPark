@@ -46,7 +46,8 @@ layout_settings = {
 viewbox_settings = {
     'level1': {
         'is_static': True,
-        'viewbox_area': [1500, 2700, 1345, 700]
+        # 'viewbox_area': BoxStyle(x=1300, y=2200, width=1345, height=700)
+        'viewbox_area': BoxStyle(x=650, y=1100, width=1345, height=700)
     },
 }
 
@@ -57,20 +58,22 @@ connection_settings = {
 }
 
 house_settings = {
-    'map_size': SizeStyle(width=4485, height=3968),
+    # 'map_size': SizeStyle(width=4485, height=3968),
+    'map_size': SizeStyle(width=2242, height=1984),
     'img_size': SizeStyle(width=32, height=44),
     'step': 5,
     'blank_color': pg.Color(0, 0, 0, 0),
     'level1': {
-        'game_time': 20 * 1000,  # 20 seconds
-        'hit_delay': 1 * 1000,  # 1 second
+        'game_time': 20,  # 20 seconds
+        'hit_delay': 1,  # 1 second
         'player_name_location': TextSytle(fontsize=12, x=-17, y=-10),
-        'player_img_box': BoxStyle(x=2000, y=2000, width=32, height=44),
+        'player_img_box': BoxStyle(x=800, y=1400, width=32, height=44),
+        # 'player_img_box': BoxStyle(x=2000, y=2000, width=32, height=44),
         'people': [
             {
                 'frame_idx': 0,
                 'added': False,
-                'img_location': None,
+                'img_location': LocationStyle(x=850, y=1450),
                 'img_size': None,
                 'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man01.png')),
             },

@@ -123,8 +123,10 @@ class Viewbox(Stage):
     def __init__(self, levelX, player_name):
         viewbox_setting = viewbox_settings[levelX]
         self.is_static = viewbox_setting['is_static']
-        self.viewbox_location = tuple(layout_settings['level']['viewbox_location'])
-        self.viewbox_area = tuple(viewbox_setting['viewbox_area'])  # x, y, w, h
+        self.viewbox_location = layout_settings['level']['viewbox_location']
+        self.viewbox_area = viewbox_setting['viewbox_area']
+        # self.viewbox_location = tuple(layout_settings['level']['viewbox_location'])
+        # self.viewbox_area = tuple(viewbox_setting['viewbox_area'])  # x, y, w, h
         self.house = House(levelX, player_name)
 
     def update(self):
@@ -140,7 +142,8 @@ class Viewbox(Stage):
             pass
 
     def draw(self):
-        g_var.surface.blit(g_var.map_surface, self.viewbox_location, self.viewbox_area)
+        self.house.draw(self.viewbox_location, self.viewbox_area)
+        # g_var.surface.blit(g_var.map_surface, self.viewbox_location, self.viewbox_area)
 
     def tick(self, keyboard):
         self.draw()

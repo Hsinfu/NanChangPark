@@ -2,9 +2,9 @@ import time
 
 
 class Clock:
-    def __init__(self, milli_seconds, enabled=False):
-        self.timeout = milli_seconds
-        self.time_left = milli_seconds
+    def __init__(self, seconds, enabled=False):
+        self.timeout = seconds
+        self.time_left = seconds
         self.start = None
         if enabled:
             self.resume()
@@ -19,7 +19,6 @@ class Clock:
     def time_left_str(self):
         return '{:02.2f}'.format(self.time_left / 1000.0)
 
-    @property
     def is_timeout(self, t=0):
         return self.time_left < t
 

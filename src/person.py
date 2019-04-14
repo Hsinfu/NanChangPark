@@ -1,10 +1,15 @@
+import logging
 import math
 import random
 import pygame as pg
 
+import g_var
 from constant import house_settings
 from utils import random_positive_negative, sign, gen_pixels
 
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)-15s:%(levelname)s:%(name)s:%(message)s')
+logger = logging.getLogger(__name__)
 
 class Person:
     def __init__(self, img, w=None, h=None, step=None,
@@ -65,11 +70,43 @@ class Person:
         return self.x, self.y
 
     def apply_rebound(self):
-        print('p: ', self.vx, self.vy, self.vxd, self.vyd)
+        logger.debug('person apply_rebound init - vx: {} vy: {} vxd: {} vyd: {}'.format(self.vx, self.vy, self.vxd, self.vyd))
         v = math.sqrt(self.vx * self.vx + self.vy * self.vy)
         vd = math.sqrt(self.vxd * self.vxd + self.vyd * self.vyd)
-        print('v vd:', v, vd)
+        logger.debug('person apply_rebound calculated - v: {} vd: {}'.format(v, vd))
         self.vx = v * self.vxd / vd
         self.vy = v * self.vyd / vd
         self.vxd = sign(self.vx)
         self.vyd = sign(self.vy)
+
+    def draw(self, viewbox_location, viewbox_area):
+        lx = self.x - viewbox_area.x
+        ly = self.y - viewbox_area.y
+        if lx > viewbox_area.width or lx + self.img.get_width() < 0:
+            return
+        if ly > viewbox_area.height or ly + self.img.get_height() < 0:
+            return
+
+        if lx < 0:
+            area_x = -lx
+            area_w = lx + self.img.get_width()
+        elif lx + self.img.get_width() > viewbox_area.width:
+            area_x = 0
+            area_w = self.img.get_width() - (viewbox_area.width - lx)
+        else:
+            area_x = 0
+            area_w = self.img.get_width()
+
+        if ly < 0:
+            area_y = -ly
+            area_h = ly + self.img.get_height()
+        elif ly + self.img.get_height() > viewbox_area.height:
+            area_y = 0
+            area_h = self.img.get_height() - (viewbox_area.height - ly)
+        else:
+            area_y = 0
+            area_h = self.img.get_height()
+
+        location = (viewbox_location.x + max(0, lx), viewbox_location.y + max(0, ly))
+        area = (area_x, area_y, area_w, area_h)
+        g_var.surface.blit(self.img, location, area)

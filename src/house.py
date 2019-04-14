@@ -1,5 +1,6 @@
 import math
 import logging
+import pygame as pg
 
 import g_var
 from clock import Clock
@@ -191,9 +192,9 @@ class House:
         img = self.map_img
         blank_color = house_settings['blank_color']
 
-        def is_blank(wi, hi):
-            return 1 if img.get_at((wi, hi)) == blank_color else 0
-        return [[is_blank(wi, hi) for hi in range(img.get_height())]
+        def is_wall(wi, hi):
+            return 0 if img.get_at((wi, hi)) == blank_color else 1
+        return [[is_wall(wi, hi) for hi in range(img.get_height())]
                                     for wi in range(img.get_width())]
 
     @property
@@ -302,7 +303,8 @@ class House:
 
     def set_delay_clock(self):
         if self.delay_clock:
-            if self.delay_clock.is_timeout:
+            logger.info('delay_clock: {}'.format(self.delay_clock.time_left))
+            if self.delay_clock.is_timeout():
                 self.delay_clock = None
             else:
                 self.delay_clock.tick()
@@ -316,21 +318,21 @@ class House:
             return
 
         # if no key pressed return
-        if keyboard[pg.K_LEFT] == keyboard[pg.K_RIGHT] and keyboard[pg.K_DOWN] == keyboard[pg.K_UP]:
+        if keyboard.is_pressed(pg.K_LEFT) == keyboard.is_pressed(pg.K_RIGHT) and keyboard.is_pressed(pg.K_DOWN) == keyboard.is_pressed(pg.K_UP):
             return
 
         # x direction
-        elif keyboard[pg.K_LEFT] and not keyboard[pg.K_RIGHT]:
+        elif keyboard.is_pressed(pg.K_LEFT) and not keyboard.is_pressed(pg.K_RIGHT):
             self.player.vxd = -1
-        elif not keyboard[pg.K_LEFT] and keyboard[pg.K_RIGHT]:
+        elif not keyboard.is_pressed(pg.K_LEFT) and keyboard.is_pressed(pg.K_RIGHT):
             self.player.vxd = 1
         else:
             self.player.vxd = 0
 
         # y direction
-        if keyboard[pg.K_DOWN] and not keyboard[pg.K_UP]:
+        if keyboard.is_pressed(pg.K_DOWN) and not keyboard.is_pressed(pg.K_UP):
             self.player.vyd = 1
-        elif not keyboard[pg.K_DOWN] and keyboard[pg.K_UP]:
+        elif not keyboard.is_pressed(pg.K_DOWN) and keyboard.is_pressed(pg.K_UP):
             self.player.vyd = -1
         else:
             self.player.vyd = 0
@@ -346,14 +348,14 @@ class House:
         self.set_player_dictection(keyboard)
         self.apply_rebound()
 
-    def draw_bottom(self):
-        g_var.map_surface.blit(self.bottom_img, (0, 0))
+    def draw_bottom(self, viewbox_location, viewbox_area):
+        g_var.surface.blit(self.bottom_img, tuple(viewbox_location), tuple(viewbox_area))
 
-    def draw(self):
-        self.draw_bottom()
+    def draw(self, viewbox_location, viewbox_area):
+        self.draw_bottom(viewbox_location, viewbox_area)
         if self.player:
-            self.player.draw()
+            self.player.draw(viewbox_location, viewbox_area)
         for p in self.people:
-            p.draw()
-        self.connection.draw()
+            p.draw(viewbox_location, viewbox_area)
+        self.connection.draw(viewbox_location, viewbox_area)
 
