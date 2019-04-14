@@ -342,6 +342,7 @@ class House:
         if self.game_clock.time_left < 0:
             return
         self.move()
+        self.load_people()
         self.hit_rebound_player()
         self.hit_rebound_people()
         self.hit_rebound_map()
