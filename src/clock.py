@@ -17,7 +17,7 @@ class Clock:
 
     @property
     def time_left_str(self):
-        return '{:02.2f}'.format(self.time_left / 1000.0)
+        return '{:02.2f}'.format(self.time_left)
 
     def is_timeout(self, t=0):
         return self.time_left < t

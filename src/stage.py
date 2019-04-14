@@ -125,8 +125,6 @@ class Viewbox(Stage):
         self.is_static = viewbox_setting['is_static']
         self.viewbox_location = layout_settings['level']['viewbox_location']
         self.viewbox_area = viewbox_setting['viewbox_area']
-        # self.viewbox_location = tuple(layout_settings['level']['viewbox_location'])
-        # self.viewbox_area = tuple(viewbox_setting['viewbox_area'])  # x, y, w, h
         self.house = House(levelX, player_name)
 
     def update(self):
@@ -141,7 +139,22 @@ class Viewbox(Stage):
             # TODO: random change the viewbox to simulate collision
             pass
 
+    def draw_time(self):
+        font_style = layout_settings['level']['time_font']
+        time_font = pg.font.SysFont('arial', font_style.fontsize)
+        time_surface = time_font.render(self.house.game_clock.time_left_str, True, font_style.color)
+        g_var.surface.blit(time_surface, (font_style.x, font_style.y))
+
+    def draw_score(self):
+        font_style = layout_settings['level']['score_font']
+        time_font = pg.font.SysFont('arial', font_style.fontsize)
+        score = '{:03d}'.format(g_var.player_score - len(self.house.connection.connects))
+        time_surface = time_font.render(score, True, font_style.color)
+        g_var.surface.blit(time_surface, (font_style.x, font_style.y))
+
     def draw(self):
+        self.draw_time()
+        self.draw_score()
         self.house.draw(self.viewbox_location, self.viewbox_area)
 
     def tick(self, keyboard):

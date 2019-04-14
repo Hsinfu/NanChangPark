@@ -2,6 +2,7 @@
 screen = None
 surface = None
 pg_clock = None
+player_score = None
 imgs = None
 
 # imgs = {

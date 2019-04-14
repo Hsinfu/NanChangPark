@@ -51,7 +51,6 @@ class Game(Stages):
         self.player_name = player_name
         self.bg_frames = Frame(g_var.surface, load_imgs('bg'))
         self.bar_frames = Frame(g_var.surface, load_imgs('bar'))
-        self._scores = game_settings['starting_scores']
         super().__init__(
             states=[
                 # 'welcome',
@@ -91,6 +90,10 @@ class Game(Stages):
 
         status = self.stage.tick(keyboard)
         if status:
+            if 'level' in self.state:
+                g_var.player_score -= len(self.stage.viewbox.house.connection.connects)
+            if 'welcome' in self.state:
+                g_var.player_score = game_settings['starting_scores']
             self.change_stage()
 
         g_var.screen.blit(g_var.surface, (0, 0))
@@ -188,6 +191,9 @@ def main():
 
     # init pygame clock
     g_var.pg_clock = pg.time.Clock()
+
+    # init player_score
+    g_var.player_score = game_settings['starting_scores']
 
     # run rank game
     RankGame().start()

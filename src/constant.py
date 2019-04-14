@@ -3,7 +3,7 @@ import pygame as pg
 from collections import namedtuple
 
 
-TextSytle = namedtuple('TextSytle', ['fontsize', 'x', 'y'])
+TextSytle = namedtuple('TextSytle', ['x', 'y', 'fontsize', 'color'])
 BoxStyle = namedtuple('BoxStyle', ['x', 'y', 'width', 'height'])
 LocationStyle = namedtuple('LocationStyle', ['x', 'y'])
 SizeStyle = namedtuple('SizeStyle', ['width', 'height'])
@@ -35,10 +35,8 @@ layout_settings = {
     },
     'level': {
         # 'name': TextSytle(fontsize=24, x=165, y=54),
-        'score': TextSytle(fontsize=24, x=1153, y=54),
-        'score_color': pg.Color(255, 255, 255),
-        'time': TextSytle(fontsize=24, x=697, y=72),
-        'time_color': pg.Color(117, 249, 76),
+        'score_font': TextSytle(x=1205, y=72, fontsize=42, color=pg.Color(255, 255, 255)),
+        'time_font': TextSytle(x=660, y=80, fontsize=48, color=pg.Color(117, 249, 76)),
         'viewbox_location': LocationStyle(x=50, y=155)
     },
 }
@@ -66,7 +64,7 @@ house_settings = {
     'level1': {
         'game_time': 20,  # 20 seconds
         'hit_delay': 1,  # 1 second
-        'player_name_location': TextSytle(fontsize=12, x=-17, y=-10),
+        'player_name_font': TextSytle(x=-17, y=-10, fontsize=12, color=pg.Color(255, 255, 255)),
         'player_img_box': BoxStyle(x=800, y=1400, width=32, height=44),
         # 'player_img_box': BoxStyle(x=2000, y=2000, width=32, height=44),
         'people': [
