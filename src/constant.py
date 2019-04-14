@@ -24,7 +24,7 @@ game_settings = {
     'game_title': 'NanChangPark Never Lock',
     'frame_rate': 24,
     'starting_scores': 100,
-    'get_player_img_method': 'scan',  # or 'scan'
+    'get_player_img_method': 'cp',  # or 'scan'
     'screen_size': SizeStyle(width=1440, height=810),
 }
 
@@ -32,6 +32,15 @@ game_settings = {
 layout_settings = {
     'confirm': {
         'img': BoxStyle(x=524, y=100, width=390, height=540)
+    },
+    'intro1': {
+        'press_a_delay_frames': game_settings['frame_rate'] * 3,  # 3 seconds
+    },
+    'intro2': {
+        'press_a_delay_frames': game_settings['frame_rate'] * 3,  # 3 seconds
+    },
+    'intro3': {
+        'press_a_delay_frames': game_settings['frame_rate'] * 3,  # 3 seconds
     },
     'level': {
         # 'name': TextSytle(fontsize=24, x=165, y=54),

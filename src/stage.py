@@ -118,11 +118,17 @@ class ConfirmStage(Stage):
 
 class IntroStage(Stage):
     def __init__(self, introX):
+        self.frame_idx = 0
+        self.house_setting = layout_settings[introX]
+        self.delay_frames = self.house_setting['press_a_delay_frames']
         self.description_frames = Frame(g_var.surface, [load_img('{}/description.png'.format(introX))])
         self.press_a_frames = Frame(g_var.surface, load_imgs('{}/press_a'.format(introX)))
 
     def tick(self, keyboard):
         self.description_frames.tick()
+        self.frame_idx += 1
+        if self.frame_idx < self.delay_frames:
+            return False
         self.press_a_frames.tick()
         if keyboard.is_pressed(pg.K_a):
             keyboard.reset_keys()
