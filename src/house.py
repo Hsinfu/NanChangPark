@@ -206,13 +206,16 @@ class House:
     def get_player(self):
         img_box = self.house_setting['player_img_box']
         player_img_fpath = get_player_img_fpath(self.player_name)
-        player_img = load_img(player_img_fpath, img_dir='', size=None)
-        return Person(
-            img=player_img,
-            w=img_box.width,
-            h=img_box.height,
-            init_x=img_box.x,
-            init_y=img_box.y)
+        try:
+            player_img = load_img(player_img_fpath, img_dir='', size=None)
+            return Person(
+                img=player_img,
+                w=img_box.width,
+                h=img_box.height,
+                init_x=img_box.x,
+                init_y=img_box.y)
+        except Exception:
+            return None
 
     def load_people(self):
         for p in self.house_setting['people']:
@@ -231,6 +234,8 @@ class House:
             p['added'] = self.add_person(person, max_retry=1)
 
     def is_overley_player(self, p):
+        if self.player is None:
+            return False
         return is_intersect(self.player, p)
 
     def is_overlap_current_people(self, p):
@@ -276,6 +281,8 @@ class House:
                     self.connection.connect(p, pi)
 
     def hit_rebound_player(self):
+        if self.player is None:
+            return
         self._hit_rebound_people(self.player, self.people, should_connect=True)
 
     def hit_rebound_people(self):
@@ -308,10 +315,13 @@ class House:
             else:
                 self.delay_clock.tick()
         else:
-            if self.player.is_rebounded:
+            if self.player and self.player.is_rebounded:
                 self.delay_clock = Clock(self.house_setting['hit_delay'], enabled=True)
 
     def set_player_dictection(self, keyboard):
+        if self.player is None:
+            return
+
         # skip while it need rebound or delay_clock exists
         if self.delay_clock or self.player.is_rebounded:
             return

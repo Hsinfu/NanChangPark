@@ -34,7 +34,8 @@ class WelcomeStage(Stage):
 
 
 class ScanStage(Stage):
-    def __init__(self):
+    def __init__(self, player_name):
+        self.player_name = player_name
         self.face_frames = Frame(g_var.surface, [load_img('scan/face.png')])
         self.press_a_frames = Frame(g_var.surface, load_imgs('scan/press_a'))
 
@@ -42,6 +43,7 @@ class ScanStage(Stage):
         self.face_frames.tick()
         self.press_a_frames.tick()
         if keyboard.is_pressed(pg.K_a):
+            do_scan(self.player_name)
             keyboard.reset_keys()
             return True
         return False

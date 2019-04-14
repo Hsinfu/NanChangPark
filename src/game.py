@@ -66,7 +66,7 @@ class Game(Stages):
             ],
             stages={
                 'welcome': WelcomeStage(),
-                'scan': ScanStage(),
+                'scan': ScanStage(player_name),
                 'loading': LoadingStage(player_name),
                 'confirm': ConfirmStage(player_name),
                 'intro1': IntroStage('intro1'),
