@@ -16,7 +16,7 @@ IMAGES_DIR = os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/'))
 SCANLINE_CMD = os.path.abspath(os.path.join(THIS_FILE_DIR, '../tools/scanline'))
 CP_SOURCES_DIR = os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1'))
 PLAYERS_IMG_DIR = os.path.abspath(os.path.join(THIS_FILE_DIR, '../players'))
-PLAYER_IMG_EXT = 'jpeg'
+PLAYER_IMG_EXT = 'jpg'
 
 
 ### game
@@ -38,7 +38,7 @@ layout_settings = {
         'score_font': TextSytle(x=1205, y=72, fontsize=42, color=pg.Color(255, 255, 255)),
         'time_font': TextSytle(x=660, y=80, fontsize=48, color=pg.Color(117, 249, 76)),
         'viewbox_location': LocationStyle(x=48, y=141),
-        'hit_shake_range': 10,
+        'hit_shake_range': 5,
     },
 }
 
