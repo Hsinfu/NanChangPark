@@ -25,13 +25,13 @@ game_settings = {
     'frame_rate': 24,
     'starting_scores': 100,
     'get_player_img_method': 'cp',  # or 'scan'
-    'screen_size': SizeStyle(width=1440, height=900),
+    'screen_size': SizeStyle(width=1440, height=810),
 }
 
 # layout
 layout_settings = {
     'confirm': {
-        'img': BoxStyle(x=516, y=100, width=407, height=620)
+        'img': BoxStyle(x=516, y=100, width=407, height=530)
     },
     'level': {
         # 'name': TextSytle(fontsize=24, x=165, y=54),
@@ -45,8 +45,7 @@ layout_settings = {
 viewbox_settings = {
     'level1': {
         'is_static': True,
-        # 'viewbox_area': BoxStyle(x=1300, y=2200, width=1345, height=700)
-        'viewbox_area': BoxStyle(x=650, y=1100, width=1345, height=700)
+        'viewbox_area': BoxStyle(x=864, y=803, width=1345, height=610)
     },
 }
 
@@ -57,17 +56,15 @@ connection_settings = {
 }
 
 house_settings = {
-    # 'map_size': SizeStyle(width=4485, height=3968),
-    'map_size': SizeStyle(width=2242, height=1984),
-    'img_size': SizeStyle(width=32, height=44),
+    'map_size': SizeStyle(width=3028, height=2680),
+    'img_size': SizeStyle(width=110, height=150),
     'step': 5,
     'blank_color': pg.Color(0, 0, 0, 0),
     'level1': {
         'game_time': 20,  # 20 seconds
         'hit_delay': 1,  # 1 second
         'player_name_font': TextSytle(x=-17, y=-10, fontsize=12, color=pg.Color(255, 255, 255)),
-        'player_img_box': BoxStyle(x=800, y=1400, width=32, height=44),
-        # 'player_img_box': BoxStyle(x=2000, y=2000, width=32, height=44),
+        'player_img_box': BoxStyle(x=800, y=1400, width=110, height=150),
         'people': [
             {
                 'frame_idx': 0,
