@@ -123,30 +123,29 @@ class Viewbox(Stage):
     def __init__(self, levelX, player_name):
         viewbox_setting = viewbox_settings[levelX]
         self.is_static = viewbox_setting['is_static']
-        self.viewbox = viewbox_setting['viewbox']
+        self.viewbox_location = tuple(layout_settings['level']['viewbox_location'])
+        self.viewbox_area = tuple(viewbox_setting['viewbox_area'])  # x, y, w, h
         self.house = House(levelX, player_name)
 
     def update(self):
         # TODO: update viewbox by self.house.player
         pass
 
-    def move(self, keyboard):
-        # self.house.move(keyboard)
+    def next(self, keyboard):
+        self.house.next(keyboard)
         if not self.is_static:
             self.update()
-        # if self.house.is_delay:
-        #     # TODO: random change the viewbox to simulate collision
-        #     pass
+        if self.house.is_delay:
+            # TODO: random change the viewbox to simulate collision
+            pass
 
     def draw(self):
-        # self.house.draw(self.viewbox)
-        pass
+        g_var.surface.blit(g_var.map_surface, self.viewbox_location, self.viewbox_area)
 
     def tick(self, keyboard):
         self.draw()
-        self.move(keyboard)
-        # return self.house.clock.time_left
-        return 10
+        self.next(keyboard)
+        return self.house.game_clock.time_left
 
 
 class Level(Stage):

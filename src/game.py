@@ -6,13 +6,7 @@ import g_var
 from keyboard import Keyboard
 from frame import Frame
 from utils import load_imgs
-from constant import (
-    GAME_RECORDS_PATH,
-    frame_rate,
-    starting_scores,
-    game_title,
-    screen_size,
-)
+from constant import GAME_RECORDS_PATH, game_settings, house_settings
 from stage import (
     WelcomeStage,
     ScanStage,
@@ -57,7 +51,7 @@ class Game(Stages):
         self.player_name = player_name
         self.bg_frames = Frame(g_var.surface, load_imgs('bg'))
         self.bar_frames = Frame(g_var.surface, load_imgs('bar'))
-        self._scores = starting_scores
+        self._scores = game_settings['starting_scores']
         super().__init__(
             states=[
                 'welcome',
@@ -175,22 +169,23 @@ class RankGame:
             # refresh pygame display
             pg.display.flip()
             # delay 1/frame_rate time by pygame clock
-            g_var.pg_clock.tick(frame_rate)
+            g_var.pg_clock.tick(game_settings['frame_rate'])
 
 
 def main():
     # init pygame
     pg.init()
-    pg.display.set_caption(game_title)
+    pg.display.set_caption(game_settings['game_title'])
 
     # init pygame screen
     # display_flags = pg.DOUBLEBUF | pg.RESIZABLE
     display_flags = pg.FULLSCREEN | pg.HWSURFACE | pg.DOUBLEBUF | pg.RESIZABLE
-    g_var.screen = pg.display.set_mode(screen_size, display_flags)
+    g_var.screen = pg.display.set_mode(tuple(game_settings['screen_size']), display_flags)
 
     # init pygame surface
     surface_flags = pg.HWACCEL | pg.HWSURFACE
     g_var.surface = pg.Surface(g_var.screen.get_size(), flags=surface_flags).convert()
+    g_var.map_surface = pg.Surface(tuple(house_settings['map_size']), flags=surface_flags).convert()
 
     # init pygame clock
     g_var.pg_clock = pg.time.Clock()

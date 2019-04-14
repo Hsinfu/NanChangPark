@@ -4,8 +4,7 @@ import random
 import subprocess
 import pygame as pg
 from constant import (
-    get_player_img_method,
-    screen_size,
+    game_settings,
     SCANLINE_CMD,
     CP_SOURCES_DIR,
     PLAYERS_IMG_DIR,
@@ -18,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def random_positive_negative():
-    return 1 if random.random(1) > 0.5 else -1
+    return 1 if random.random() > 0.5 else -1
 
 
 def sign(v):
@@ -53,16 +52,17 @@ def scan(player_name):
 
 
 def do_scan(player_name):
-    if get_player_img_method == 'cp':
+    m = game_settings['get_player_img_method']
+    if m == 'cp':
         cp(player_name)
-    elif get_player_img_method == 'scan':
+    elif m == 'scan':
         scan(player_name)
     else:
-        logger.error('get_player_img_method error')
+        logger.error('game_settings["get_player_img_method"] error')
         raise Exception
 
 
-def load_img(fname, img_dir=IMAGES_DIR, size=screen_size):
+def load_img(fname, img_dir=IMAGES_DIR, size=tuple(game_settings['screen_size'])):
     fpath = os.path.join(img_dir, fname)
     img = pg.image.load(fpath)
     if size:
@@ -71,7 +71,13 @@ def load_img(fname, img_dir=IMAGES_DIR, size=screen_size):
     return img
 
 
-def load_imgs(dir_name, count=48, size=screen_size):
+def load_imgs(dir_name, count=48, size=tuple(game_settings['screen_size'])):
     def get_fname(i):
         return os.path.join(dir_name, '{:05d}.png'.format(i))
     return [load_img(get_fname(i)) for i in range(count)]
+
+
+def gen_pixels(img):
+    for h in range(img.get_height()):
+        for w in range(img.get_width()):
+            yield tuple(img.get_at((w,h)))

@@ -1,6 +1,7 @@
 ### Global variable
 screen = None
 surface = None
+map_surface = None
 pg_clock = None
 imgs = None
 

@@ -1,6 +1,7 @@
 import math
 import logging
 
+import g_var
 from clock import Clock
 from connection import Connection
 from constant import house_settings
@@ -13,10 +14,10 @@ logger = logging.getLogger(__name__)
 
 def get_box(p):
     return {
-        'top': p.y + p.img.height,
+        'top': p.y + p.img.get_height(),
         'bottom': p.y,
         'left': p.x,
-        'right': p.x + p.img.width,
+        'right': p.x + p.img.get_width(),
     }
 
 
@@ -30,33 +31,31 @@ def is_intersect(p1, p2):
     )
 
 
-def is_intersect_people(p, people):
-    for pi in people:
-        if is_intersect(p, pi):
-            return True
-    return False
-
-
 def is_intersect_map(p, map_wall):
     b = get_box(p)
     for wi in range(math.floor(b['left']), math.ceil(b['right'])):
         for hi in range(math.floor(b['bottom']), math.ceil(b['top'])):
-            if map_wall[wi][hi] == 1:
-                return True
+            try:
+                if map_wall[wi][hi] == 1:
+                    return True
+            except Exception:
+                print('is_intersect_map', wi, hi)
+            # if map_wall[wi][hi] == 1:
+            #     return True
     return False
 
 
 def get_v_rebound(p1, p2):
     # return p1_vxd, p2_vxd, p1_vyd, p2_vyd
     if p1.pre_x > p2.pre_x:
-        x_dist = p1.pre_x - p2.pre_x - p2.img.width
+        x_dist = p1.pre_x - p2.pre_x - p2.img.get_width()
     else:
-        x_dist = p2.pre_x - p1.pre_x - p1.img.width
+        x_dist = p2.pre_x - p1.pre_x - p1.img.get_width()
 
     if p1.pre_y > p2.pre_y:
-        y_dist = p1.pre_y - p2.pre_y - p2.img.height
+        y_dist = p1.pre_y - p2.pre_y - p2.img.get_height()
     else:
-        y_dist = p2.pre_y - p1.pre_y - p1.img.height
+        y_dist = p2.pre_y - p1.pre_y - p1.img.get_height()
 
     if x_dist < 0 and y_dist < 0:
         print('Error: get_v_rebound both dist < 0')
@@ -120,12 +119,12 @@ def get_v_rebound_map(p, map_wall):
     # print('collision', x_collision, y_collision)
 
     if p.vx > 0:
-        x_dist = x_collision - (p.pre_x + p.img.width)
+        x_dist = x_collision - (p.pre_x + p.img.get_width())
     else:
         x_dist = p.pre_x - x_collision
 
     if p.vy > 0:
-        y_dist = y_collision - (p.pre_y + p.img.height)
+        y_dist = y_collision - (p.pre_y + p.img.get_height())
     else:
         y_dist = p.pre_y - y_collision
 
@@ -156,25 +155,46 @@ class House:
         self._player = None
         self.people = []
         self.connection = Connection()
-        self.bottom_img = load_img('house/bottom.png', size=None),
-        self.map_img = load_img('house/map.png', size=None),
+        self._bottom_img = None
+        self._map_img = None
         self._map_wall = None
         self.house_setting = house_settings[levelX]
         self.delay_clock = None
         self.game_clock = Clock(self.house_setting['game_time'])
         self.load_people()
 
+    @property
+    def bottom_img(self):
+        if self._bottom_img is None:
+            self._bottom_img = load_img('house/bottom.png', size=tuple(house_settings['map_size']))
+        return self._bottom_img
+
+    @property
+    def map_img(self):
+        if self._map_img is None:
+            self._map_img = load_img('house/map.png', size=tuple(house_settings['map_size']))
+            print('init map_img type', type(self._map_img))
+        return self._map_img
+
+    @property
+    def is_delay(self):
+        return False if self.delay_clock is None else True
 
     @property
     def map_wall(self):
         if self._map_wall is None:
             self._map_wall = self.get_map_wall()
+            print('map_wall size', len(self._map_wall), len(self._map_wall[0]))
         return self._map_wall
 
     def get_map_wall(self):
         img = self.map_img
-        return [[1 if img.get(wi, hi) not in blank_colors else 0
-                for hi in range(img.height)] for wi in range(img.width)]
+        blank_color = house_settings['blank_color']
+
+        def is_blank(wi, hi):
+            return 1 if img.get_at((wi, hi)) == blank_color else 0
+        return [[is_blank(wi, hi) for hi in range(img.get_height())]
+                                    for wi in range(img.get_width())]
 
     @property
     def player(self):
@@ -183,22 +203,31 @@ class House:
         return self._player
 
     def get_player(self):
-        img_size = self.house_setting['player_img_size']
-        img_location = self.house_setting['player_img_location']
-        player_img_size = [img_size.width, img_size.height]
+        img_box = self.house_setting['player_img_box']
         player_img_fpath = get_player_img_fpath(self.player_name)
-        player_img = load_img(player_img_fpath, img_dir='', size=player_img_size)
+        player_img = load_img(player_img_fpath, img_dir='', size=None)
         return Person(
             img=player_img,
-            init_x=img_location.x,
-            init_y=img_location.y,)
+            w=img_box.width,
+            h=img_box.height,
+            init_x=img_box.x,
+            init_y=img_box.y)
 
     def load_people(self):
         for p in self.house_setting['people']:
             if p['added'] or p['frame_idx'] > self.frame_idx:
                 continue
-            # img =
-            # self.add_person(Person())
+            img = load_img(p['img_path'], img_dir='', size=None)
+            if p['img_size'] is None:
+                w, h = None, None
+            else:
+                w, h = tuple(p['img_size'])
+            if p['img_location'] is None:
+                init_x, init_y = None, None
+            else:
+                init_x, init_y = tuple(p['img_location'])
+            person = Person(img=img, w=w, h=h, init_x=init_x, init_y=init_y)
+            p['added'] = self.add_person(person, max_retry=1)
 
     def is_overley_player(self, p):
         return is_intersect(self.player, p)
@@ -225,14 +254,15 @@ class House:
         for retry_i in range(max_retry):
             if self.check_init_location_ok(p):
                 self.people.append(p)
-                return
+                return True
             else:
                 logger.info('retry add_person {} times'.format(retry_i))
                 p.init_location()
         logger.error('add_person failed!!')
-        raise Exception
+        return False
 
     def move(self):
+        self.game_clock.resume()
         if self.player:
             self.player.move()
         for p in self.people:
@@ -306,6 +336,8 @@ class House:
             self.player.vyd = 0
 
     def next(self, keyboard):
+        if self.game_clock.time_left < 0:
+            return
         self.move()
         self.hit_rebound_player()
         self.hit_rebound_people()
@@ -314,6 +346,14 @@ class House:
         self.set_player_dictection(keyboard)
         self.apply_rebound()
 
-    def draw(self, viewbox):
-        pass
+    def draw_bottom(self):
+        g_var.map_surface.blit(self.bottom_img, (0, 0))
+
+    def draw(self):
+        self.draw_bottom()
+        if self.player:
+            self.player.draw()
+        for p in self.people:
+            p.draw()
+        self.connection.draw()
 

@@ -1,4 +1,7 @@
 import random
+import pygame as pg
+
+import g_var
 from constant import connection_settings
 
 
@@ -9,10 +12,10 @@ class Connection:
 
     @staticmethod
     def get_img_color_idx(img, c):
-        for h in range(img.height):
-            for w in range(img.width):
-                if img.pixels[h*img.width+w] == c:
-                    return h, w
+        for hi in range(img.get_height()):
+            for wi in range(img.get_width()):
+                if img.get_at((wi, hi)) == c:
+                    return wi, hi
 
     def connect(self, p1, p2, max_num=connection_settings['max_num_per_collision']):
         """
@@ -20,17 +23,19 @@ class Connection:
             p2 (Person)
             max_num (int, optional, default connection_settings['max_num_per_collision']
         """
-        s1 = set(p1.img.pixels)
-        s2 = set(p2.img.pixels)
-        ss = s1.intersection(s2)
-
+        colors = p1.img_colors.intersection(p2.img_colors)
         num = int(random.randrange(max_num))
-        ss = sorted(ss, key=lambda x: random.random(1))
-
-        for c in list(ss)[:num]:
+        for c in random.sample(colors, num):
             p1_coord = self.get_img_color_idx(p1.img, c)
             p2_coord = self.get_img_color_idx(p2.img, c)
             n = self.connect_num.get((p1, p2), 0)
             if n < connection_settings['max_num']:
                 self.connects.append((c, p1, p1_coord, p2, p2_coord))
                 self.connect_num[(p1, p2)] = n + 1
+
+    def draw(self):
+        for c, p1, p1_coord, p2, p2_coord in self.connects:
+            position1 = (p1.x + p1_coord[0], p1.y + p1_coord[1])
+            position2 = (p2.x + p2_coord[0], p2.y + p2_coord[1])
+            line_widht = connection_settings['line_width']
+            pg.draw.line(g_var.map_surface, c, position1, position2, width=line_widht)

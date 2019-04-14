@@ -1,7 +1,9 @@
 import math
 import random
+import pygame as pg
+
 from constant import house_settings
-from utils import random_positive_negative, sign
+from utils import random_positive_negative, sign, gen_pixels
 
 
 class Person:
@@ -14,20 +16,16 @@ class Person:
 
     def random_location(self):
         map_size = house_settings['map_size']
-        random_x = random.random(map_size.width - self.img.width)
-        random_y = random.random(map_size.height - self.img.height)
+        random_x = random.random() * (map_size.width - self.img.get_width())
+        random_y = random.random() * (map_size.height - self.img.get_height())
         return random_x, random_y
 
     def random_step(self, direction='corners'):
         if direction == 'corners':
-            # w, h = self.img.width, self.img.height
-            # l = sqrt(w * w + h * h)
-            # vx_ratio = w / l
-            # vy_ratio = h / l
             vx_ratio = 1 / math.sqrt(2)
             vy_ratio = 1 / math.sqrt(2)
         else:  # random direction
-            vx_ratio = random.random(1)
+            vx_ratio = random.random()
             vy_ratio = math.sqrt(1 - vx_ratio * vx_ratio)
 
         random_vx = self.step * random_positive_negative() * vx_ratio
@@ -38,8 +36,8 @@ class Person:
         img_size = house_settings['img_size']
         img_w = w or img_size.width
         img_h = h or img_size.height
-        img.resize(img_w, img_h)
-        self.img = img
+        self.img = pg.transform.scale(img, (img_w, img_h))
+        self.img_colors = set(gen_pixels(self.img))
 
     def init_location(self, init_x=None, init_y=None):
         random_x, random_y = self.random_location()
