@@ -163,6 +163,7 @@ class House:
         self.delay_clock = None
         self.game_clock = Clock(self.house_setting['game_time'])
         self.load_people()
+        self.shake = False
 
     @property
     def bottom_img(self):
@@ -276,6 +277,7 @@ class House:
     def _hit_rebound_people(self, p, people, should_connect=False):
         for pi in people:
             if is_intersect(p, pi):
+                self.shake = should_connect
                 p.vxd, pi.vxd, p.vyd, pi.vyd = get_v_rebound(p, pi)
                 if should_connect:
                     self.connection.connect(p, pi)
@@ -309,13 +311,14 @@ class House:
 
     def set_delay_clock(self):
         if self.delay_clock:
+            self.shake = False
             logger.info('delay_clock: {}'.format(self.delay_clock.time_left))
             if self.delay_clock.is_timeout():
                 self.delay_clock = None
             else:
                 self.delay_clock.tick()
         else:
-            if self.player and self.player.is_rebounded:
+            if self.shake:
                 self.delay_clock = Clock(self.house_setting['hit_delay'], enabled=True)
 
     def set_player_dictection(self, keyboard):
