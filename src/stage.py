@@ -299,11 +299,11 @@ class Rank(Stage):
             pg.draw.rect(g_var.surface, name_fontstyle.color, name_rect, 1)
 
             name_font = pg.font.SysFont('arial', name_fontstyle.fontsize)
-            name_surface = name_font.render(self.player_name, True, name_fontstyle.color)
+            name_surface = name_font.render(record['name'], True, name_fontstyle.color)
             g_var.surface.blit(name_surface, [name_fontstyle.x + a.x, name_fontstyle.y + a.y])
 
             score_font = pg.font.SysFont('arial', score_fontstyle.fontsize)
-            score_str = 'Score: {:03d}'.format(g_var.player_score)
+            score_str = 'Score: {:03d}'.format(record['score'])
             score_surface = score_font.render(score_str, True, score_fontstyle.color)
             g_var.surface.blit(score_surface, [score_fontstyle.x + a.x, score_fontstyle.y + a.y + a.height])
 
