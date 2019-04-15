@@ -32,16 +32,16 @@ def is_intersect(p1, p2):
     )
 
 
-def is_intersect_map(p, map_wall):
+def is_intersect_map(p, wall):
     b = get_box(p)
     for wi in range(math.floor(b['left']), math.ceil(b['right'])):
         for hi in range(math.floor(b['bottom']), math.ceil(b['top'])):
             try:
-                if map_wall[wi][hi] == 1:
+                if wall[wi][hi] == 1:
                     return True
             except Exception:
                 print('is_intersect_map', wi, hi)
-            # if map_wall[wi][hi] == 1:
+            # if wall[wi][hi] == 1:
             #     return True
     return False
 
@@ -88,7 +88,7 @@ def get_v_rebound(p1, p2):
     return sign(p1.vx), sign(p2.vx), -1 * sign(p1.vy), -1 * sign(p2.vy)
 
 
-def get_v_rebound_map(p, map_wall):
+def get_v_rebound_map(p, wall):
     # print('p (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p.pre_x, p.pre_y, p.x, p.y, p.vx, p.vy))
 
     b = get_box(p)
@@ -101,7 +101,7 @@ def get_v_rebound_map(p, map_wall):
 
         for wi in w_range:
             for hi in range(math.floor(b['bottom']), math.ceil(b['top'])):
-                if map_wall[wi][hi] == 1:
+                if wall[wi][hi] == 1:
                     return wi
 
     def get_h_overlap(t='bottom'):
@@ -111,7 +111,7 @@ def get_v_rebound_map(p, map_wall):
 
         for hi in h_range:
             for wi in range(math.floor(b['left']), math.ceil(b['right'])):
-                if map_wall[wi][hi] == 1:
+                if wall[wi][hi] == 1:
                     return hi
 
     x_collision = get_w_overlap('left') if p.vx > 0 else get_w_overlap('right')
@@ -159,7 +159,10 @@ class House:
         self._bottom_img = None
         self._map_img = None
         self._map_wall = None
+        self._player_map_img = None
+        self._player_wall = None
         self.house_setting = house_settings[levelX]
+        self.levelX = levelX
         self.delay_clock = None
         self.game_clock = Clock(self.house_setting['game_time'])
         self.load_people()
@@ -179,18 +182,38 @@ class House:
         return self._map_img
 
     @property
+    def player_map_img(self):
+        if self._player_map_img is None:
+            try:
+                fpath = '{}/player_map.png'.format(self.levelX)
+                self._player_map_img = load_img(fpath, size=tuple(house_settings['map_size']))
+            except Exception:
+                pass
+        return self._player_map_img
+
+    @property
     def is_delay(self):
         return False if self.delay_clock is None else True
+
+    @property
+    def player_wall(self):
+        if self._player_wall is None:
+            self._player_wall = self.get_player_wall()
+        return self._player_wall
+
+    def get_player_wall(self):
+        return self.get_wall(self.player_map_img)
 
     @property
     def map_wall(self):
         if self._map_wall is None:
             self._map_wall = self.get_map_wall()
-            print('map_wall size', len(self._map_wall), len(self._map_wall[0]))
         return self._map_wall
 
     def get_map_wall(self):
-        img = self.map_img
+        return self.get_wall(self.map_img)
+
+    def get_wall(self, img):
         blank_color = house_settings['blank_color']
 
         def is_wall(wi, hi):
@@ -246,15 +269,15 @@ class House:
                 return True
         return False
 
-    def is_overlap_map(self, p):
-        return is_intersect_map(p, self.map_wall)
+    def is_overlap_wall(self, p, wall=None):
+        return is_intersect_map(p, wall or self.map_wall)
 
     def check_init_location_ok(self, p):
         if self.is_overley_player(p):
             return False
         if self.is_overlap_current_people(p):
             return False
-        if self.is_overlap_map(p):
+        if self.is_overlap_wall(p):
             return False
         return True
 
@@ -294,15 +317,15 @@ class House:
             p = people.pop()
             self._hit_rebound_people(p, people)
 
-    def _hit_rebound_map(self, p):
-        if self.is_overlap_map(p):
-            p.vxd, p.vyd = get_v_rebound_map(p, self.map_wall)
+    def _hit_rebound_wall(self, p, wall):
+        if self.is_overlap_wall(p, wall):
+            p.vxd, p.vyd = get_v_rebound_map(p, wall)
 
-    def hit_rebound_map(self):
+    def hit_rebound_wall(self):
         if self.player:
-            self._hit_rebound_map(self.player)
+            self._hit_rebound_wall(self.player, self.player_wall)
         for p in self.people:
-            self._hit_rebound_map(p)
+            self._hit_rebound_wall(p, self.map_wall)
 
     def apply_rebound(self):
         if self.player:
@@ -360,7 +383,7 @@ class House:
         self.load_people()
         self.hit_rebound_player()
         self.hit_rebound_people()
-        self.hit_rebound_map()
+        self.hit_rebound_wall()
         self.set_delay_clock()
         self.set_player_dictection(keyboard)
         self.apply_rebound()
