@@ -9,7 +9,9 @@ LocationStyle = namedtuple('LocationStyle', ['x', 'y'])
 SizeStyle = namedtuple('SizeStyle', ['width', 'height'])
 
 ### Static Path
+VIRTUALENV = os.path.expanduser('~/.venv/NanChangPark/bin/python')
 THIS_FILE_DIR = os.path.dirname(__file__)
+INSTAGRAM_UPLOADER_PY = os.path.abspath(os.path.join(THIS_FILE_DIR, 'ig_upload.py'))
 INSTAGRAM_ACCOUNT_PATH = os.path.abspath(os.path.join(THIS_FILE_DIR, '../instagram_account.json'))
 GAME_RECORDS_PATH = os.path.abspath(os.path.join(THIS_FILE_DIR, '../record.json'))
 IMAGES_DIR = os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/'))
@@ -26,6 +28,7 @@ game_settings = {
     'starting_scores': 100,
     'is_scanner_connected': False,  # or True
     'screen_size': SizeStyle(width=1440, height=810),
+    'instagram_img_center_area': AreaStyle(x=0, y=239, width=1276, height=1276),
 }
 
 # layout

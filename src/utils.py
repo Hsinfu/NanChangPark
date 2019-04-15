@@ -8,6 +8,8 @@ import g_var
 from constant import (
     game_settings,
     house_settings,
+    VIRTUALENV,
+    INSTAGRAM_UPLOADER_PY,
     SCANLINE_CMD,
     CP_SOURCES_DIR,
     PLAYERS_IMG_DIR,
@@ -43,6 +45,10 @@ def get_player_img_fpath(player_name):
     return os.path.join(PLAYERS_IMG_DIR, fname)
 
 
+def get_player_ig_img_fpath(player_name):
+    return get_player_img_fpath('{}_ig'.format(player_name))
+
+
 def cp(player_name):
     i = random.randrange(1, 8)
     f = '{}/man{:02d}.png'.format(CP_SOURCES_DIR, i)
@@ -68,6 +74,23 @@ def do_scan(player_name):
         cp(player_name)
 
 
+def upload_ig(player_name, caption):
+    img_fpath = get_player_img_fpath(player_name)
+    ig_img_fpath = get_player_ig_img_fpath(player_name)
+    img_area = game_settings['instagram_img_center_area']
+    cmd1 = 'convert {} -crop {}x{}+{}+{} {}'.format(
+        img_fpath,
+        img_area.width,
+        img_area.height,
+        img_area.x,
+        img_area.y,
+        ig_img_fpath,
+    )
+    cmd2 = '{} {} --img-fpath "{}" --caption "{}"'.format(
+        VIRTUALENV, INSTAGRAM_UPLOADER_PY, ig_img_fpath, caption)
+    command_line('({} && {}) &'.format(cmd1, cmd2))
+
+
 def load_img(fname, img_dir, size):
     fpath = os.path.join(img_dir, fname)
     img = pg.image.load(fpath)
@@ -88,10 +111,6 @@ def get_player_img(player_name, size=tuple(house_settings['img_size'])):
     # NOTE: Do not cache, since there will be multiple sizes
     fpath = get_player_img_fpath(player_name)
     return load_img(fpath, img_dir='', size=size)
-
-
-def get_random_person_img(size=tuple(house_settings['img_size'])):
-    pass
 
 
 def get_map_img(fname):
