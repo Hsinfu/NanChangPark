@@ -79,23 +79,19 @@ class Person:
         self.vxd = sign(self.vx)
         self.vyd = sign(self.vy)
 
-    def draw(self, viewbox_location, viewbox_area):
-        area = viewbox_area
-
+    def draw(self, layout_location, viewbox_area):
         view_box = (
             viewbox_area.x,
             viewbox_area.y,
             viewbox_area.x + viewbox_area.width,
             viewbox_area.y + viewbox_area.height,
         )
-
         img_box = (
             self.x,
             self.y,
             self.x + self.img.get_width(),
             self.y + self.img.get_height(),
         )
-
         overlay_box = (
             max(view_box[0], img_box[0]),
             max(view_box[1], img_box[1]),
@@ -107,10 +103,9 @@ class Person:
             return
 
         surface_loc = (
-            overlay_box[0] - viewbox_area.x + viewbox_location.x,
-            overlay_box[1] - viewbox_area.y + viewbox_location.y,
+            overlay_box[0] - viewbox_area.x + layout_location.x,
+            overlay_box[1] - viewbox_area.y + layout_location.y,
         )
-
         overlay_area = (
             overlay_box[0] - self.x,
             overlay_box[1] - self.y,
@@ -119,49 +114,3 @@ class Person:
         )
 
         g_var.surface.blit(self.img, surface_loc, overlay_area)
-
-        # # skip while all pixel of img is out of viewbox_area
-        # if self.x + self.img.get_width() < area.x:
-        #     return
-        # if self.x > area.x + area.width:
-        #     return
-        # if self.y + self.img.get_height() < area.y:
-        #     return
-        # if self.y > area.y + area.height:
-        #     return
-        # # get new_area which is a overlay of viewbox_area and img area
-        # if self.x < area.x:
-        #     new_area_x = area.x
-        #     new_area_w = self.x + self.img.get_width() - area.x
-        # elif self.x + self.img.get_width() > area.x + area.width:
-        #     new_area_x = self.x
-        #     new_area_w = (self.x + self.img.get_width()) - (area.x + area.width)
-        # else:
-        #     new_area_x = self.x
-        #     new_area_w = self.img.get_width()
-
-        # if self.y < area.y:
-        #     new_area_y = area.y
-        #     new_area_h = self.y + self.img.get_height() - area.y
-        # elif self.y + self.img.get_height() > area.y + area.height:
-        #     new_area_y = self.y
-        #     new_area_h = (self.y + self.img.get_height()) - (area.y + area.height)
-        # else:
-        #     new_area_y = self.y
-        #     new_area_h = self.img.get_height()
-
-        # # viewbox_loc
-        # loc = (
-        #     new_area_x - area.x + viewbox_location.x,
-        #     new_area_y - area.y + viewbox_location.y,
-        # )
-
-        # # img area by img viewpoint
-        # img_area = (
-        #     new_area_x - self.x,
-        #     new_area_y - self.y,
-        #     new_area_w,
-        #     new_area_h,
-        # )
-
-        # g_var.surface.blit(self.img, loc, img_area)

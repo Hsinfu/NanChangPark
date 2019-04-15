@@ -140,7 +140,7 @@ class Viewbox(Stage):
     def __init__(self, levelX, player_name):
         viewbox_setting = viewbox_settings[levelX]
         self.is_static = viewbox_setting['is_static']
-        self.viewbox_location = layout_settings['level']['viewbox_location']
+        self.layout_location = layout_settings['level']['layout_location']
         self.shake_range = layout_settings['level']['hit_shake_range']
         self._viewbox_area = viewbox_setting['viewbox_area']
         self.house = House(levelX, player_name)
@@ -180,7 +180,7 @@ class Viewbox(Stage):
     def draw(self):
         self.draw_time()
         self.draw_score()
-        self.house.draw(self.viewbox_location, self.viewbox_area)
+        self.house.draw(self.layout_location, self.viewbox_area)
 
     def tick(self, keyboard):
         self.draw()

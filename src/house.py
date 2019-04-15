@@ -360,14 +360,14 @@ class House:
         self.set_player_dictection(keyboard)
         self.apply_rebound()
 
-    def draw_bottom(self, viewbox_location, viewbox_area):
-        g_var.surface.blit(self.bottom_img, tuple(viewbox_location), tuple(viewbox_area))
+    def draw_bottom(self, layout_location, viewbox_area):
+        g_var.surface.blit(self.bottom_img, tuple(layout_location), tuple(viewbox_area))
 
-    def draw(self, viewbox_location, viewbox_area):
-        self.draw_bottom(viewbox_location, viewbox_area)
+    def draw(self, layout_location, viewbox_area):
+        self.draw_bottom(layout_location, viewbox_area)
         if self.player:
-            self.player.draw(viewbox_location, viewbox_area)
+            self.player.draw(layout_location, viewbox_area)
         for p in self.people:
-            p.draw(viewbox_location, viewbox_area)
-        self.connection.draw(viewbox_location, viewbox_area)
+            p.draw(layout_location, viewbox_area)
+        self.connection.draw(layout_location, viewbox_area)
 
