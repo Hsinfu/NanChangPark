@@ -1,3 +1,4 @@
+import copy
 import math
 import logging
 import pygame as pg
@@ -167,7 +168,7 @@ class House:
         self._bottom_img = None
         self._map_wall = None
         self._player_wall = None
-        self.house_setting = house_settings[levelX]
+        self.house_setting = copy.deepcopy(house_settings[levelX])
         self.levelX = levelX
         self.delay_clock = None
         self.game_clock = Clock(self.house_setting['game_time'])

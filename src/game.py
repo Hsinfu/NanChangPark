@@ -1,13 +1,13 @@
 import logging
-import threading
 import pygame as pg
-import pandas as pd
+from datetime import datetime
 
 import g_var
 from keyboard import Keyboard
 from frame import Frame
+from record import Record
 from utils import get_layout_imgs, load_all_imgs, load_all_walls
-from constant import GAME_RECORDS_PATH, game_settings
+from constant import game_settings
 from stage import (
     WelcomeStage,
     ScanStage,
@@ -15,6 +15,7 @@ from stage import (
     ConfirmStage,
     IntroStage,
     Level,
+    Rank,
 )
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)-15s:%(levelname)s:%(name)s:%(message)s')
@@ -64,6 +65,7 @@ class Game(Stages):
                 'level2',
                 'intro3',
                 'level3',
+                'rank',
             ],
             stages={
                 'welcome': WelcomeStage(),
@@ -76,6 +78,7 @@ class Game(Stages):
                 'level2': Level('level2', player_name),
                 'intro3': IntroStage('intro3'),
                 'level3': Level('level3', player_name),
+                'rank': Rank(player_name),
             },
         )
 
@@ -91,10 +94,16 @@ class Game(Stages):
 
         status = self.stage.tick(keyboard)
         if status:
-            if 'level' in self.state:
-                g_var.player_score -= len(self.stage.viewbox.house.connection.connects)
-            if 'welcome' in self.state:
+            if 'welcome' == self.state:
                 g_var.player_score = game_settings['starting_scores']
+            elif 'level' in self.state:
+                g_var.player_score -= len(self.stage.viewbox.house.connection.connects)
+            elif 'rank' == self.state:
+                return {
+                    'name': self.player_name,
+                    'score': g_var.player_score,
+                    'datetime': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                }
             self.change_stage()
 
         g_var.screen.blit(g_var.surface, (0, 0))
@@ -102,32 +111,17 @@ class Game(Stages):
 
 
 class RankGame:
-    def __init__(self, is_ready=False, records_path=GAME_RECORDS_PATH):
-        """
-            records: [
-                {
-                    "name": "xxx",
-                    "score": 26,
-                    "avatar": "../avatars/xxx.png"
-                }
-            ]
-        """
+    def __init__(self, is_ready=False):
         self._game = None
         self._keyboard = None
         self.is_ready = is_ready
-        self.records_path = records_path
-        try:
-            self.records = pd.read_json(records_path)
-        except Exception:
-            self.records = []
         self.bg_frames = Frame(g_var.surface, get_layout_imgs('bg'))
         self.ball_frames = Frame(g_var.surface, get_layout_imgs('loading/ball'))
         self.bar_frames = Frame(g_var.surface, get_layout_imgs('bar'))
 
-
     @property
     def player_idx(self):
-        return len(self.records)
+        return len(g_var.records.df)
 
     @property
     def player_name(self):
@@ -145,11 +139,6 @@ class RankGame:
             self._keyboard = Keyboard()
         return self._keyboard
 
-    def add(self, record):
-        self.records.append(pd.DataFrame([record]), ignore_index=True)
-        self.records.to_json(self.records_path, orient='records')
-        self._game = None
-
     def tick(self, keyboard):
         # logger.info('RankGame tick')
         if not self.is_ready:
@@ -159,7 +148,9 @@ class RankGame:
             return
         record = self.game.tick(keyboard)
         if record is not None:
-            self.add(record)
+            logger.info('record {}'.format(record))
+            self._game = None
+            g_var.records.add(record)
             g_var.player_idx = self.player_idx
 
     def start(self):
@@ -213,6 +204,9 @@ def main():
 
     # init player_score
     g_var.player_score = game_settings['starting_scores']
+
+    # init records
+    g_var.records = Record()
 
     # init RankGame
     rank_game = RankGame()

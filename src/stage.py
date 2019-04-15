@@ -1,5 +1,8 @@
+import copy
+import math
 import random
 import pygame as pg
+import pandas as pd
 
 import g_var
 from constant import AreaStyle, layout_settings, viewbox_settings
@@ -79,7 +82,7 @@ class ConfirmStage(Stage):
         self.player_img_area = layout_settings['confirm']['img_area']
         self._player_frames = None
         self.press_frames = Frame(g_var.surface, get_layout_imgs('confirm/press'))
-        self.ball_frames = Frame(g_var.surface, get_layout_imgs('loading/ball'))
+        self.ball_frames = Frame(g_var.surface, get_layout_imgs('confirm/ball'))
 
     @property
     def player_frames(self):
@@ -151,8 +154,14 @@ class Viewbox(Stage):
         return AreaStyle(x=a.x+shake_x, y=a.y+shake_y, width=a.width, height=a.height)
 
     def update(self):
-        # TODO: update viewbox by self.house.player
-        pass
+        a = self._view_area
+        p = self.house.player
+        self._view_area = AreaStyle(
+            x=math.floor(p.x + p.img.get_width()/2 - a.width/2),
+            y=math.floor(p.y + p.img.get_height()/2 - a.height/2),
+            width=a.width,
+            height=a.height,
+        )
 
     def next(self, keyboard):
         self.house.next(keyboard)
@@ -206,4 +215,108 @@ class Level(Stage):
                 return True
             self.end_frames.idx = end_frames_idx
             self.end_frames.draw()
+        return False
+
+
+class Rank(Stage):
+    def __init__(self, player_name):
+        self.frame_idx = 0
+        self.player_name = player_name
+        self.player_imgs = {}
+        self._rank_records = None
+        self.rank_frames = Frame(g_var.surface, [get_layout_img('rank/ranking.png')])
+        self.press_a_frames = Frame(g_var.surface, get_layout_imgs('rank/press_a'))
+
+    @property
+    def rank_records(self):
+        if self._rank_records is None:
+            self._rank_records = self.get_rank_record()
+        return self._rank_records
+
+    def get_player_record(self):
+        return {
+            'name': self.player_name,
+            'score': g_var.player_score,
+        }
+
+    def get_player_img(self, player_name, size):
+        key = (player_name, size)
+        if key not in self.player_imgs:
+            self.player_imgs[key] = get_player_img(player_name, size)
+        return self.player_imgs[key]
+
+    def get_rank_record(self, max_num=3):
+        record_num = len(g_var.records.df)
+        num = min(max_num, record_num + 1)
+        player_df = pd.DataFrame([self.get_player_record()])
+        merged_df = g_var.records.df.append(player_df, ignore_index=True)
+        sorted_df = merged_df.sort_values(by=['score']).iloc[:num]
+        return sorted_df.to_dict('records')
+
+    def draw_player(self):
+        a = layout_settings['rank']['player_area']
+        img = self.get_player_img(self.player_name, (a.width, a.height))
+        g_var.surface.blit(img, [a.x, a.y])
+
+        name_rectstyle = layout_settings['rank']['player_name_rectstyle']
+        name_fontstyle = layout_settings['rank']['player_name_fontstyle']
+        score_fontstyle = layout_settings['rank']['player_score_fontstyle']
+
+        name_rect = pg.Rect(
+            name_rectstyle.x + a.x,
+            name_rectstyle.y + a.y,
+            name_rectstyle.width,
+            name_rectstyle.height,
+        )
+        pg.draw.rect(g_var.surface, name_fontstyle.color, name_rect, 1)
+
+        name_font = pg.font.SysFont('arial', name_fontstyle.fontsize)
+        name_surface = name_font.render(self.player_name, True, name_fontstyle.color)
+        g_var.surface.blit(name_surface, [name_fontstyle.x + a.x, name_fontstyle.y + a.y])
+
+        score_font = pg.font.SysFont('arial', score_fontstyle.fontsize)
+        score_str = 'Score: {:03d}'.format(g_var.player_score)
+        score_surface = score_font.render(score_str, True, score_fontstyle.color)
+        g_var.surface.blit(score_surface, [score_fontstyle.x + a.x, score_fontstyle.y + a.y + a.height])
+
+    def draw_ranks(self):
+        name_fontstyle = layout_settings['rank']['rank_name_fontstyle']
+        name_rectstyle = layout_settings['rank']['rank_name_rectstyle']
+        score_fontstyle = layout_settings['rank']['rank_score_fontstyle']
+
+        for idx, record in enumerate(self.rank_records):
+            rankX = 'rank{}_area'.format(idx + 1)
+            a = layout_settings['rank'][rankX]
+            img = self.get_player_img(record['name'], (a.width, a.height))
+            g_var.surface.blit(img, [a.x, a.y])
+
+            name_rect = pg.Rect(
+                name_rectstyle.x + a.x,
+                name_rectstyle.y + a.y,
+                name_rectstyle.width,
+                name_rectstyle.height,
+            )
+            pg.draw.rect(g_var.surface, name_fontstyle.color, name_rect, 1)
+
+            name_font = pg.font.SysFont('arial', name_fontstyle.fontsize)
+            name_surface = name_font.render(self.player_name, True, name_fontstyle.color)
+            g_var.surface.blit(name_surface, [name_fontstyle.x + a.x, name_fontstyle.y + a.y])
+
+            score_font = pg.font.SysFont('arial', score_fontstyle.fontsize)
+            score_str = 'Score: {:03d}'.format(g_var.player_score)
+            score_surface = score_font.render(score_str, True, score_fontstyle.color)
+            g_var.surface.blit(score_surface, [score_fontstyle.x + a.x, score_fontstyle.y + a.y + a.height])
+
+    def tick(self, keyboard):
+        self.rank_frames.tick()
+        self.draw_player()
+        self.draw_ranks()
+        self.frame_idx += 1
+        if self.frame_idx <= 48:
+            return False
+
+        self.press_a_frames.tick()
+        if keyboard.is_pressed(pg.K_a):
+            keyboard.reset_keys()
+            return True
         return False

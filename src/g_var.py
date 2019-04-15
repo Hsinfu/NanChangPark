@@ -4,3 +4,4 @@ surface = None
 pg_clock = None
 player_score = None
 player_idx = 0
+records = None

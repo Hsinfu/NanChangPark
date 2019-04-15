@@ -50,10 +50,17 @@ layout_settings = {
         'hit_shake_range': 5,
     },
     'rank': {
-        'player_box': AreaStyle(x=66, y=96, width=369, height=507),
-        'rank1': AreaStyle(x=386, y=246, width=259, height=356),
-        'rank2': AreaStyle(x=616, y=246, width=259, height=356),
-        'rank3': AreaStyle(x=835, y=246, width=259, height=356),
+        'player_name_fontstyle': TextSytle(x=-55, y=-20, fontsize=32, color=pg.Color(255, 255, 255)),
+        'player_name_rectstyle': AreaStyle(x=-60, y=-22, width=165, height=40),
+        'player_score_fontstyle': TextSytle(x=100, y=12, fontsize=32, color=pg.Color(255, 255, 255)),
+        'rank_name_fontstyle': TextSytle(x=-35, y=-20, fontsize=28, color=pg.Color(255, 255, 255)),
+        'rank_name_rectstyle': AreaStyle(x=-40, y=-22, width=160, height=35),
+        'rank_score_fontstyle': TextSytle(x=58, y=12, fontsize=28, color=pg.Color(255, 255, 255)),
+
+        'player_area': AreaStyle(x=91, y=96, width=365, height=506),
+        'rank1_area': AreaStyle(x=517, y=247, width=257, height=355),
+        'rank2_area': AreaStyle(x=823, y=247, width=257, height=355),
+        'rank3_area': AreaStyle(x=1115, y=247, width=257, height=355),
     },
 }
 
@@ -86,7 +93,7 @@ house_settings = {
     'player_name_fontstyle': TextSytle(x=-28, y=-13, fontsize=18, color=pg.Color(255, 255, 255)),
     'player_name_rectstyle': AreaStyle(x=-32, y=-14, width=94, height=24),
     'level1': {
-        'game_time': 40,  # 40 seconds
+        'game_time': 30,  # 30 seconds
         'hit_delay': 0.5,  # 0.5 second
         'player_img_area': AreaStyle(x=1282, y=879, width=110, height=150),
         'add_person_max_retry': 1,
@@ -136,7 +143,7 @@ house_settings = {
         ]
     },
     'level2': {
-        'game_time': 40,  # 40 seconds
+        'game_time': 30,  # 30 seconds
         'hit_delay': 0.5,  # 0.5 second
         'player_img_area': AreaStyle(x=719, y=382, width=110, height=150),
         'add_person_max_retry': 100,
@@ -192,7 +199,7 @@ house_settings = {
         ],
     },
     'level3': {
-        'game_time': 40,  # 40 seconds
+        'game_time': 30,  # 30 seconds
         'hit_delay': 0.5,  # 0.5 second
         'player_img_area': AreaStyle(x=843, y=1650, width=110, height=150),
         'add_person_max_retry': 100,
