@@ -53,11 +53,11 @@ class Game(Stages):
         self.bar_frames = Frame(g_var.surface, load_imgs('bar'))
         super().__init__(
             states=[
-                'welcome',
-                'scan',
-                'loading',
-                'confirm',
-                'intro1',
+                # 'welcome',
+                # 'scan',
+                # 'loading',
+                # 'confirm',
+                # 'intro1',
                 'level1',
                 'intro2',
                 # 'level2',
@@ -65,11 +65,11 @@ class Game(Stages):
                 # 'level3',
             ],
             stages={
-                'welcome': WelcomeStage(),
-                'scan': ScanStage(player_name),
-                'loading': LoadingStage(player_name),
-                'confirm': ConfirmStage(player_name),
-                'intro1': IntroStage('intro1'),
+                # 'welcome': WelcomeStage(),
+                # 'scan': ScanStage(player_name),
+                # 'loading': LoadingStage(player_name),
+                # 'confirm': ConfirmStage(player_name),
+                # 'intro1': IntroStage('intro1'),
                 'level1': Level('level1', player_name),
                 'intro2': IntroStage('intro2'),
                 # 'level2': Level('level2', player_name),

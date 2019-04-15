@@ -2,7 +2,7 @@ import random
 import pygame as pg
 
 import g_var
-from constant import BoxStyle, layout_settings, viewbox_settings
+from constant import AreaStyle, layout_settings, viewbox_settings
 from frame import Frame
 from house import House
 from utils import (
@@ -51,8 +51,8 @@ class ScanStage(Stage):
 
 class LoadingStage(Stage):
     def __init__(self, player_name):
-        s = layout_settings['confirm']['img']
-        self.img_size = [s.width, s.height]
+        img_area = layout_settings['confirm']['img_area']
+        self.img_size = [img_area.width, img_area.height]
         self.img_fpath = get_player_img_fpath(player_name)
         self.ball_frames = Frame(g_var.surface, load_imgs('loading/ball'))
 
@@ -88,8 +88,8 @@ class ConfirmStage(Stage):
         return self._player_frames
 
     def get_player_img(self):
-        s = layout_settings['confirm']['img']
-        player_img_size = [s.width, s.height]
+        img_area = layout_settings['confirm']['img_area']
+        player_img_size = [img_area.width, img_area.height]
         player_img_fpath = get_player_img_fpath(self.player_name)
         try:
             return load_img(player_img_fpath, img_dir='', size=player_img_size)
@@ -105,8 +105,8 @@ class ConfirmStage(Stage):
             self.ball_frames.tick()
             keyboard.reset_keys()
             return False
-        s = layout_settings['confirm']['img']
-        self.player_frames.tick(s.x, s.y)
+        img_area = layout_settings['confirm']['img_area']
+        self.player_frames.tick(img_area.x, img_area.y)
         self.press_frames.tick()
         if keyboard.is_pressed(pg.K_a):
             keyboard.reset_keys()
@@ -142,17 +142,17 @@ class Viewbox(Stage):
         self.is_static = viewbox_setting['is_static']
         self.layout_location = layout_settings['level']['layout_location']
         self.shake_range = layout_settings['level']['hit_shake_range']
-        self._viewbox_area = viewbox_setting['viewbox_area']
+        self._view_area = viewbox_setting['view_area']
         self.house = House(levelX, player_name)
 
     @property
-    def viewbox_area(self):
+    def view_area(self):
         if not self.house.is_delay:
-            return self._viewbox_area
-        a = self._viewbox_area
+            return self._view_area
+        a = self._view_area
         shake_x = random_positive_negative() * random.randrange(self.shake_range)
         shake_y = random_positive_negative() * random.randrange(self.shake_range)
-        return BoxStyle(x=a.x+shake_x, y=a.y+shake_y, width=a.width, height=a.height)
+        return AreaStyle(x=a.x+shake_x, y=a.y+shake_y, width=a.width, height=a.height)
 
     def update(self):
         # TODO: update viewbox by self.house.player
@@ -180,7 +180,7 @@ class Viewbox(Stage):
     def draw(self):
         self.draw_time()
         self.draw_score()
-        self.house.draw(self.layout_location, self.viewbox_area)
+        self.house.draw(self.layout_location, self.view_area)
 
     def tick(self, keyboard):
         self.draw()

@@ -205,12 +205,13 @@ class House:
         return self._player
 
     def get_player(self):
-        img_box = self.house_setting['player_img_box']
+        img_box = self.house_setting['player_img_area']
         player_img_fpath = get_player_img_fpath(self.player_name)
         try:
             player_img = load_img(player_img_fpath, img_dir='', size=None)
             return Person(
                 img=player_img,
+                name=self.player_name,
                 w=img_box.width,
                 h=img_box.height,
                 init_x=img_box.x,
@@ -363,14 +364,14 @@ class House:
         self.set_player_dictection(keyboard)
         self.apply_rebound()
 
-    def draw_bottom(self, layout_location, viewbox_area):
-        g_var.surface.blit(self.bottom_img, tuple(layout_location), tuple(viewbox_area))
+    def draw_bottom(self, layout_location, view_area):
+        g_var.surface.blit(self.bottom_img, tuple(layout_location), tuple(view_area))
 
-    def draw(self, layout_location, viewbox_area):
-        self.draw_bottom(layout_location, viewbox_area)
+    def draw(self, layout_location, view_area):
+        self.draw_bottom(layout_location, view_area)
         if self.player:
-            self.player.draw(layout_location, viewbox_area)
+            self.player.draw(layout_location, view_area)
         for p in self.people:
-            p.draw(layout_location, viewbox_area)
-        self.connection.draw(layout_location, viewbox_area)
+            p.draw(layout_location, view_area)
+        self.connection.draw(layout_location, view_area)
 

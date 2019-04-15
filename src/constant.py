@@ -4,7 +4,7 @@ from collections import namedtuple
 
 
 TextSytle = namedtuple('TextSytle', ['x', 'y', 'fontsize', 'color'])
-BoxStyle = namedtuple('BoxStyle', ['x', 'y', 'width', 'height'])
+AreaStyle = namedtuple('AreaStyle', ['x', 'y', 'width', 'height'])
 LocationStyle = namedtuple('LocationStyle', ['x', 'y'])
 SizeStyle = namedtuple('SizeStyle', ['width', 'height'])
 
@@ -31,7 +31,7 @@ game_settings = {
 # layout
 layout_settings = {
     'confirm': {
-        'img': BoxStyle(x=524, y=100, width=390, height=540)
+        'img_area': AreaStyle(x=524, y=100, width=390, height=540)
     },
     'intro1': {
         'press_a_delay_frames': game_settings['frame_rate'] * 3,  # 3 seconds
@@ -50,17 +50,17 @@ layout_settings = {
         'hit_shake_range': 5,
     },
     'rank': {
-        'player_box': BoxStyle(x=66, y=96, width=369, height=507),
-        'rank1': BoxStyle(x=386, y=246, width=259, height=356),
-        'rank2': BoxStyle(x=616, y=246, width=259, height=356),
-        'rank3': BoxStyle(x=835, y=246, width=259, height=356),
+        'player_box': AreaStyle(x=66, y=96, width=369, height=507),
+        'rank1': AreaStyle(x=386, y=246, width=259, height=356),
+        'rank2': AreaStyle(x=616, y=246, width=259, height=356),
+        'rank3': AreaStyle(x=835, y=246, width=259, height=356),
     },
 }
 
 viewbox_settings = {
     'level1': {
         'is_static': True,
-        'viewbox_area': BoxStyle(x=778, y=846, width=1345, height=628)
+        'view_area': AreaStyle(x=778, y=846, width=1345, height=628)
     },
 }
 
@@ -75,11 +75,12 @@ house_settings = {
     'img_size': SizeStyle(width=110, height=150),
     'step': 20,
     'blank_color': pg.Color(255, 255, 255, 255),
+    'player_name_fontstyle': TextSytle(x=-28, y=-13, fontsize=18, color=pg.Color(255, 255, 255)),
+    'player_name_rectstyle': AreaStyle(x=-32, y=-14, width=94, height=24),
     'level1': {
         'game_time': 40,  # 40 seconds
         'hit_delay': 0.5,  # 0.5 second
-        'player_name_font': TextSytle(x=-17, y=-10, fontsize=12, color=pg.Color(255, 255, 255)),
-        'player_img_box': BoxStyle(x=1282, y=879, width=110, height=150),
+        'player_img_area': AreaStyle(x=1282, y=879, width=110, height=150),
         'people': [
             {
                 'frame_idx': 0,
@@ -135,8 +136,7 @@ house_settings = {
     'level2': {
         'game_time': 40,  # 40 seconds
         'hit_delay': 0.5,  # 0.5 second
-        'player_name_font': TextSytle(x=-17, y=-10, fontsize=12, color=pg.Color(255, 255, 255)),
-        'player_img_box': BoxStyle(x=719, y=382, width=110, height=150),
+        'player_img_area': AreaStyle(x=719, y=382, width=110, height=150),
         'people': [
 
         ],
@@ -144,8 +144,7 @@ house_settings = {
     'level3': {
         'game_time': 40,  # 40 seconds
         'hit_delay': 0.5,  # 0.5 second
-        'player_name_font': TextSytle(x=-17, y=-10, fontsize=12, color=pg.Color(255, 255, 255)),
-        'player_img_box': BoxStyle(x=843, y=1650, width=110, height=150),
+        'player_img_area': AreaStyle(x=843, y=1650, width=110, height=150),
         'people': [
 
         ],

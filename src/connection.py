@@ -34,8 +34,8 @@ class Connection:
                 self.connects.append((pg.Color(*c), p1, p1_coord, p2, p2_coord))
                 self.connect_num[(p1, p2)] = n + 1
 
-    def draw(self, layout_location, viewbox_area):
-        area = viewbox_area
+    def draw(self, layout_location, view_area):
+        area = view_area
         for c, p1, p1_coord, p2, p2_coord in self.connects:
 
             positions = [
