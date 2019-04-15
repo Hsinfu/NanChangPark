@@ -7,9 +7,10 @@ from frame import Frame
 from house import House
 from utils import (
     do_scan,
-    load_img,
-    load_imgs,
-    get_player_img_fpath,
+    get_layout_img,
+    get_layout_imgs,
+    get_countdown_imgs,
+    get_player_img,
     random_positive_negative,
 )
 
@@ -21,8 +22,8 @@ class Stage:
 
 class WelcomeStage(Stage):
     def __init__(self):
-        self.logo_frames = Frame(g_var.surface, load_imgs('welcome/logo'))
-        self.press_a_frames = Frame(g_var.surface, load_imgs('welcome/press_a'))
+        self.logo_frames = Frame(g_var.surface, get_layout_imgs('welcome/logo'))
+        self.press_a_frames = Frame(g_var.surface, get_layout_imgs('welcome/press_a'))
 
     def tick(self, keyboard):
         self.logo_frames.tick()
@@ -36,8 +37,8 @@ class WelcomeStage(Stage):
 class ScanStage(Stage):
     def __init__(self, player_name):
         self.player_name = player_name
-        self.face_frames = Frame(g_var.surface, [load_img('scan/face.png')])
-        self.press_a_frames = Frame(g_var.surface, load_imgs('scan/press_a'))
+        self.face_frames = Frame(g_var.surface, [get_layout_img('scan/face.png')])
+        self.press_a_frames = Frame(g_var.surface, get_layout_imgs('scan/press_a'))
 
     def tick(self, keyboard):
         self.face_frames.tick()
@@ -51,15 +52,15 @@ class ScanStage(Stage):
 
 class LoadingStage(Stage):
     def __init__(self, player_name):
-        img_area = layout_settings['confirm']['img_area']
-        self.img_size = [img_area.width, img_area.height]
-        self.img_fpath = get_player_img_fpath(player_name)
-        self.ball_frames = Frame(g_var.surface, load_imgs('loading/ball'))
+        self.player_name = player_name
+        self.ball_frames = Frame(g_var.surface, get_layout_imgs('loading/ball'))
 
     @property
     def loaded(self):
         try:
-            load_img(self.img_fpath, img_dir='', size=self.img_size)
+            img_area = layout_settings['confirm']['img_area']
+            img_size = [img_area.width, img_area.height]
+            get_player_img(self.player_name, size=img_size)
             return True
         except Exception:
             return False
@@ -75,26 +76,22 @@ class LoadingStage(Stage):
 class ConfirmStage(Stage):
     def __init__(self, player_name):
         self.player_name = player_name
+        self.player_img_area = layout_settings['confirm']['img_area']
         self._player_frames = None
-        self.press_frames = Frame(g_var.surface, load_imgs('confirm/press'))
-        self.ball_frames = Frame(g_var.surface, load_imgs('loading/ball'))
+        self.press_frames = Frame(g_var.surface, get_layout_imgs('confirm/press'))
+        self.ball_frames = Frame(g_var.surface, get_layout_imgs('loading/ball'))
 
     @property
     def player_frames(self):
         if self._player_frames is None:
-            img = self.get_player_img()
-            if img:
-                self._player_frames = Frame(g_var.surface, [img])
+            try:
+                img_size = [self.player_img_area.width, self.player_img_area.height]
+                img = get_player_img(self.player_name, size=img_size)
+                if img:
+                    self._player_frames = Frame(g_var.surface, [img])
+            except Exception:
+                pass
         return self._player_frames
-
-    def get_player_img(self):
-        img_area = layout_settings['confirm']['img_area']
-        player_img_size = [img_area.width, img_area.height]
-        player_img_fpath = get_player_img_fpath(self.player_name)
-        try:
-            return load_img(player_img_fpath, img_dir='', size=player_img_size)
-        except Exception:
-            return None
 
     def do_scan(self):
         self._player_frames = None
@@ -105,8 +102,7 @@ class ConfirmStage(Stage):
             self.ball_frames.tick()
             keyboard.reset_keys()
             return False
-        img_area = layout_settings['confirm']['img_area']
-        self.player_frames.tick(img_area.x, img_area.y)
+        self.player_frames.tick(self.player_img_area.x, self.player_img_area.y)
         self.press_frames.tick()
         if keyboard.is_pressed(pg.K_a):
             keyboard.reset_keys()
@@ -121,8 +117,8 @@ class IntroStage(Stage):
         self.frame_idx = 0
         self.house_setting = layout_settings[introX]
         self.delay_frames = self.house_setting['press_a_delay_frames']
-        self.description_frames = Frame(g_var.surface, [load_img('{}/description.png'.format(introX))])
-        self.press_a_frames = Frame(g_var.surface, load_imgs('{}/press_a'.format(introX)))
+        self.description_frames = Frame(g_var.surface, [get_layout_img('{}/description.png'.format(introX))])
+        self.press_a_frames = Frame(g_var.surface, get_layout_imgs('{}/press_a'.format(introX)))
 
     def tick(self, keyboard):
         self.description_frames.tick()
@@ -191,9 +187,9 @@ class Viewbox(Stage):
 class Level(Stage):
     def __init__(self, levelX, player_name):
         self.viewbox = Viewbox(levelX, player_name)
-        self.box_frames = Frame(g_var.surface, [load_img('{}/box.png'.format(levelX))])
-        self.start_frames = Frame(g_var.surface, load_imgs('{}/start'.format(levelX), 96))
-        self.end_frames = Frame(g_var.surface, load_imgs('{}/end'.format(levelX), 96))
+        self.box_frames = Frame(g_var.surface, [get_layout_img('{}/box.png'.format(levelX))])
+        self.start_frames = Frame(g_var.surface, get_countdown_imgs('{}/start'.format(levelX)))
+        self.end_frames = Frame(g_var.surface, get_countdown_imgs('{}/end'.format(levelX)))
 
     def tick(self, keyboard):
         if not self.start_frames.is_last_frame:

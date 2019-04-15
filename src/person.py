@@ -13,10 +13,11 @@ logger = logging.getLogger(__name__)
 
 
 class Person:
-    def __init__(self, img, name=None, w=None, h=None, step=None,
+    def __init__(self, img, name=None, is_show_name=False, w=None, h=None, step=None,
                  init_x=None, init_y=None, init_vx=None, init_vy=None):
         self.step = step or house_settings['step']
         self.name = name
+        self.is_show_name = is_show_name
         self.name_fontstyle = house_settings['player_name_fontstyle']
         self.name_rectstyle = house_settings['player_name_rectstyle']
         self.init_img(img, w, h)
@@ -133,7 +134,7 @@ class Person:
             g_var.surface.blit(self.img, tuple(surface_loc), tuple(overlay_area))
 
     def draw_name(self, layout_location, view_area):
-        if self.name is None:
+        if not self.is_show_name:
             return
 
         fontstyle = self.name_fontstyle

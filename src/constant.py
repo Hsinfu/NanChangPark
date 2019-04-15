@@ -24,7 +24,7 @@ game_settings = {
     'game_title': 'NanChangPark Never Lock',
     'frame_rate': 24,
     'starting_scores': 100,
-    'get_player_img_method': 'cp',  # or 'scan'
+    'is_scanner_connected': False,  # or True
     'screen_size': SizeStyle(width=1440, height=810),
 }
 
@@ -62,6 +62,14 @@ viewbox_settings = {
         'is_static': True,
         'view_area': AreaStyle(x=778, y=846, width=1345, height=628)
     },
+    'level2': {
+        'is_static': False,
+        'view_area': AreaStyle(x=101, y=143, width=1345, height=628)
+    },
+    'level3': {
+        'is_static': False,
+        'view_area': AreaStyle(x=225, y=1411, width=1345, height=628)
+    },
 }
 
 connection_settings = {
@@ -81,55 +89,49 @@ house_settings = {
         'game_time': 40,  # 40 seconds
         'hit_delay': 0.5,  # 0.5 second
         'player_img_area': AreaStyle(x=1282, y=879, width=110, height=150),
+        'add_person_max_retry': 1,
         'people': [
             {
                 'frame_idx': 0,
                 'added': False,
                 'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
-                'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man01.png')),
             },
             {
                 'frame_idx': game_settings['frame_rate'] * 1,
                 'added': False,
                 'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
-                'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man02.png')),
             },
             {
                 'frame_idx': game_settings['frame_rate'] * 2,
                 'added': False,
                 'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
-                'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man03.png')),
             },
             {
                 'frame_idx': game_settings['frame_rate'] * 3,
                 'added': False,
                 'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
-                'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man04.png')),
             },
             {
                 'frame_idx': game_settings['frame_rate'] * 4,
                 'added': False,
                 'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
-                'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man05.png')),
             },
             {
                 'frame_idx': game_settings['frame_rate'] * 5,
                 'added': False,
                 'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
-                'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man06.png')),
             },
             {
                 'frame_idx': game_settings['frame_rate'] * 6,
                 'added': False,
                 'img_location': LocationStyle(x=1873, y=1067),
                 'img_size': None,
-                'img_path': os.path.abspath(os.path.join(THIS_FILE_DIR, '../imgs/level1/man07.png')),
             },
         ]
     },
@@ -137,16 +139,112 @@ house_settings = {
         'game_time': 40,  # 40 seconds
         'hit_delay': 0.5,  # 0.5 second
         'player_img_area': AreaStyle(x=719, y=382, width=110, height=150),
+        'add_person_max_retry': 100,
         'people': [
-
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
         ],
     },
     'level3': {
         'game_time': 40,  # 40 seconds
         'hit_delay': 0.5,  # 0.5 second
         'player_img_area': AreaStyle(x=843, y=1650, width=110, height=150),
+        'add_person_max_retry': 100,
         'people': [
-
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
+            {
+                'frame_idx': 0,
+                'added': False,
+                'img_location': None,
+                'img_size': None,
+            },
         ],
     },
 }

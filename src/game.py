@@ -1,12 +1,13 @@
 import logging
+import threading
 import pygame as pg
 import pandas as pd
 
 import g_var
 from keyboard import Keyboard
 from frame import Frame
-from utils import load_imgs
-from constant import GAME_RECORDS_PATH, game_settings, house_settings
+from utils import get_layout_imgs, load_all_imgs, load_all_walls
+from constant import GAME_RECORDS_PATH, game_settings
 from stage import (
     WelcomeStage,
     ScanStage,
@@ -49,32 +50,32 @@ class Stages:
 class Game(Stages):
     def __init__(self, player_name):
         self.player_name = player_name
-        self.bg_frames = Frame(g_var.surface, load_imgs('bg'))
-        self.bar_frames = Frame(g_var.surface, load_imgs('bar'))
+        self.bg_frames = Frame(g_var.surface, get_layout_imgs('bg'))
+        self.bar_frames = Frame(g_var.surface, get_layout_imgs('bar'))
         super().__init__(
             states=[
-                # 'welcome',
-                # 'scan',
-                # 'loading',
-                # 'confirm',
-                # 'intro1',
+                'welcome',
+                'scan',
+                'loading',
+                'confirm',
+                'intro1',
                 'level1',
                 'intro2',
-                # 'level2',
-                # 'intro3',
-                # 'level3',
+                'level2',
+                'intro3',
+                'level3',
             ],
             stages={
-                # 'welcome': WelcomeStage(),
-                # 'scan': ScanStage(player_name),
-                # 'loading': LoadingStage(player_name),
-                # 'confirm': ConfirmStage(player_name),
-                # 'intro1': IntroStage('intro1'),
+                'welcome': WelcomeStage(),
+                'scan': ScanStage(player_name),
+                'loading': LoadingStage(player_name),
+                'confirm': ConfirmStage(player_name),
+                'intro1': IntroStage('intro1'),
                 'level1': Level('level1', player_name),
                 'intro2': IntroStage('intro2'),
-                # 'level2': Level('level2', player_name),
-                # 'intro3': IntroStage('intro3'),
-                # 'level3': Level('level3', player_name),
+                'level2': Level('level2', player_name),
+                'intro3': IntroStage('intro3'),
+                'level3': Level('level3', player_name),
             },
         )
 
@@ -101,7 +102,7 @@ class Game(Stages):
 
 
 class RankGame:
-    def __init__(self, records_path=GAME_RECORDS_PATH):
+    def __init__(self, is_ready=False, records_path=GAME_RECORDS_PATH):
         """
             records: [
                 {
@@ -113,11 +114,16 @@ class RankGame:
         """
         self._game = None
         self._keyboard = None
+        self.is_ready = is_ready
         self.records_path = records_path
         try:
             self.records = pd.read_json(records_path)
         except Exception:
             self.records = []
+        self.bg_frames = Frame(g_var.surface, get_layout_imgs('bg'))
+        self.ball_frames = Frame(g_var.surface, get_layout_imgs('loading/ball'))
+        self.bar_frames = Frame(g_var.surface, get_layout_imgs('bar'))
+
 
     @property
     def player_idx(self):
@@ -146,9 +152,15 @@ class RankGame:
 
     def tick(self, keyboard):
         # logger.info('RankGame tick')
+        if not self.is_ready:
+            self.bg_frames.tick()
+            self.ball_frames.tick()
+            self.bar_frames.tick()
+            return
         record = self.game.tick(keyboard)
         if record is not None:
             self.add(record)
+            g_var.player_idx = self.player_idx
 
     def start(self):
         while True:
@@ -175,6 +187,13 @@ class RankGame:
             g_var.pg_clock.tick(game_settings['frame_rate'])
 
 
+def init(rank_game):
+    # load_all_imgs first while init
+    load_all_imgs()
+    load_all_walls()
+    rank_game.is_ready = True
+
+
 def main():
     # init pygame
     pg.init()
@@ -195,8 +214,16 @@ def main():
     # init player_score
     g_var.player_score = game_settings['starting_scores']
 
+    # init RankGame
+    rank_game = RankGame()
+
+    # TODO: create a thread to load images
+    # init_thread = threading.Thread(target=init, args=[rank_game, pg])
+    # init_thread.start()
+    init(rank_game)
+
     # run rank game
-    RankGame().start()
+    rank_game.start()
 
     # quit pygame
     pg.quit()

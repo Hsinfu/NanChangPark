@@ -7,7 +7,14 @@ from clock import Clock
 from connection import Connection
 from constant import house_settings
 from person import Person
-from utils import get_player_img_fpath, load_img, sign
+from utils import (
+    sign,
+    get_img,
+    get_map_img,
+    get_player_img,
+    get_wall,
+    get_available_imgs_fpath,
+)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)-15s:%(levelname)s:%(name)s:%(message)s')
 logger = logging.getLogger(__name__)
@@ -155,41 +162,24 @@ class House:
         self.player_name = player_name
         self._player = None
         self.people = []
+        self.ppl_imgs_fpath = []
         self.connection = Connection()
         self._bottom_img = None
-        self._map_img = None
         self._map_wall = None
-        self._player_map_img = None
         self._player_wall = None
         self.house_setting = house_settings[levelX]
         self.levelX = levelX
         self.delay_clock = None
         self.game_clock = Clock(self.house_setting['game_time'])
+        self.add_person_max_retry = self.house_setting['add_person_max_retry']
         self.load_people()
         self.shake = False
 
     @property
     def bottom_img(self):
         if self._bottom_img is None:
-            self._bottom_img = load_img('house/bottom.png', size=tuple(house_settings['map_size']))
+            self._bottom_img = get_map_img('house/bottom.png')
         return self._bottom_img
-
-    @property
-    def map_img(self):
-        if self._map_img is None:
-            self._map_img = load_img('house/map.png', size=tuple(house_settings['map_size']))
-            print('init map_img type', type(self._map_img))
-        return self._map_img
-
-    @property
-    def player_map_img(self):
-        if self._player_map_img is None:
-            try:
-                fpath = '{}/player_map.png'.format(self.levelX)
-                self._player_map_img = load_img(fpath, size=tuple(house_settings['map_size']))
-            except Exception:
-                pass
-        return self._player_map_img
 
     @property
     def is_delay(self):
@@ -198,28 +188,14 @@ class House:
     @property
     def player_wall(self):
         if self._player_wall is None:
-            self._player_wall = self.get_player_wall()
+            self._player_wall = get_wall('{}/player_map.png'.format(self.levelX))
         return self._player_wall
-
-    def get_player_wall(self):
-        return self.get_wall(self.player_map_img)
 
     @property
     def map_wall(self):
         if self._map_wall is None:
-            self._map_wall = self.get_map_wall()
+            self._map_wall = get_wall('house/map.png')
         return self._map_wall
-
-    def get_map_wall(self):
-        return self.get_wall(self.map_img)
-
-    def get_wall(self, img):
-        blank_color = house_settings['blank_color']
-
-        def is_wall(wi, hi):
-            return 0 if img.get_at((wi, hi)) == blank_color else 1
-        return [[is_wall(wi, hi) for hi in range(img.get_height())]
-                                    for wi in range(img.get_width())]
 
     @property
     def player(self):
@@ -228,25 +204,30 @@ class House:
         return self._player
 
     def get_player(self):
-        img_box = self.house_setting['player_img_area']
-        player_img_fpath = get_player_img_fpath(self.player_name)
+        img_area = self.house_setting['player_img_area']
         try:
-            player_img = load_img(player_img_fpath, img_dir='', size=None)
+            img_size = [img_area.width, img_area.height]
+            player_img = get_player_img(self.player_name, img_size)
             return Person(
                 img=player_img,
                 name=self.player_name,
-                w=img_box.width,
-                h=img_box.height,
-                init_x=img_box.x,
-                init_y=img_box.y)
+                is_show_name=True,
+                w=img_area.width,
+                h=img_area.height,
+                init_x=img_area.x,
+                init_y=img_area.y)
         except Exception:
             return None
 
     def load_people(self):
-        for p in self.house_setting['people']:
-            if p['added'] or p['frame_idx'] > self.frame_idx:
-                continue
-            img = load_img(p['img_path'], img_dir='', size=None)
+        def is_available(p):
+            return p['added'] is False and p['frame_idx'] <= self.frame_idx
+
+        ppl = list(filter(is_available, self.house_setting['people']))
+        imgs_fpath = get_available_imgs_fpath(len(ppl), self.ppl_imgs_fpath)
+
+        for p, img_fpath in zip(ppl, imgs_fpath):
+            img = get_img(img_fpath)
             if p['img_size'] is None:
                 w, h = None, None
             else:
@@ -256,7 +237,7 @@ class House:
             else:
                 init_x, init_y = tuple(p['img_location'])
             person = Person(img=img, w=w, h=h, init_x=init_x, init_y=init_y)
-            p['added'] = self.add_person(person, max_retry=1)
+            p['added'] = self.add_person(person, img_fpath, max_retry=self.add_person_max_retry)
 
     def is_overley_player(self, p):
         if self.player is None:
@@ -281,10 +262,11 @@ class House:
             return False
         return True
 
-    def add_person(self, p, max_retry=1000):
+    def add_person(self, p, img_fpath, max_retry=1000):
         for retry_i in range(max_retry):
             if self.check_init_location_ok(p):
                 self.people.append(p)
+                self.ppl_imgs_fpath.append(img_fpath)
                 return True
             else:
                 logger.info('retry add_person {} times'.format(retry_i))
@@ -323,7 +305,7 @@ class House:
 
     def hit_rebound_wall(self):
         if self.player:
-            self._hit_rebound_wall(self.player, self.player_wall)
+            self._hit_rebound_wall(self.player, self.player_wall or self.map_wall)
         for p in self.people:
             self._hit_rebound_wall(p, self.map_wall)
 

@@ -3,8 +3,11 @@ import logging
 import random
 import subprocess
 import pygame as pg
+
+import g_var
 from constant import (
     game_settings,
+    house_settings,
     SCANLINE_CMD,
     CP_SOURCES_DIR,
     PLAYERS_IMG_DIR,
@@ -58,18 +61,14 @@ def scan(player_name):
 
 
 def do_scan(player_name):
-    m = game_settings['get_player_img_method']
     rm(player_name)
-    if m == 'cp':
-        cp(player_name)
-    elif m == 'scan':
+    if game_settings['is_scanner_connected']:
         scan(player_name)
     else:
-        logger.error('game_settings["get_player_img_method"] error')
-        raise Exception
+        cp(player_name)
 
 
-def load_img(fname, img_dir=IMAGES_DIR, size=tuple(game_settings['screen_size'])):
+def load_img(fname, img_dir, size):
     fpath = os.path.join(img_dir, fname)
     img = pg.image.load(fpath)
     if size:
@@ -78,13 +77,132 @@ def load_img(fname, img_dir=IMAGES_DIR, size=tuple(game_settings['screen_size'])
     return img
 
 
-def load_imgs(dir_name, count=48, size=tuple(game_settings['screen_size'])):
+imgs = {}
+
+
+def get_img(fpath):
+    return load_img(fpath, img_dir='', size=None)
+
+
+def get_player_img(player_name, size=tuple(house_settings['img_size'])):
+    # NOTE: Do not cache, since there will be multiple sizes
+    fpath = get_player_img_fpath(player_name)
+    return load_img(fpath, img_dir='', size=size)
+
+
+def get_random_person_img(size=tuple(house_settings['img_size'])):
+    pass
+
+
+def get_map_img(fname):
+    if fname not in imgs:
+        size = tuple(house_settings['map_size'])
+        imgs[fname] = load_img(fname, IMAGES_DIR, size)
+    return imgs[fname]
+
+
+def get_layout_img(fname):
+    if fname not in imgs:
+        size = tuple(game_settings['screen_size'])
+        imgs[fname] = load_img(fname, IMAGES_DIR, size)
+    return imgs[fname]
+
+
+def get_layout_imgs(dname, count=48):
     def get_fname(i):
-        return os.path.join(dir_name, '{:05d}.png'.format(i))
-    return [load_img(get_fname(i)) for i in range(count)]
+        return os.path.join(dname, '{:05d}.png'.format(i))
+    return [get_layout_img(get_fname(i)) for i in range(count)]
+
+
+def get_countdown_imgs(dname, count=96):
+    return get_layout_imgs(dname, count)
+
+
+def load_all_imgs():
+    get_map_img('house/bottom.png')
+    get_map_img('house/map.png')
+    get_map_img('level1/player_map.png')
+
+    # get_layout_imgs('bg')
+    # get_layout_imgs('bar')
+
+    get_layout_imgs('welcome/logo')
+    get_layout_imgs('welcome/press_a')
+
+    get_layout_img('scan/face.png')
+    get_layout_imgs('scan/press_a')
+
+    # get_layout_imgs('loading/ball')
+
+    get_layout_imgs('confirm/press')
+    get_layout_imgs('confirm/ball')
+
+    get_layout_img('intro1/description.png')
+    get_layout_img('intro2/description.png')
+    get_layout_img('intro3/description.png')
+    get_layout_imgs('intro1/press_a')
+    get_layout_imgs('intro2/press_a')
+    get_layout_imgs('intro3/press_a')
+
+    get_layout_img('level1/box.png')
+    get_layout_img('level2/box.png')
+    get_layout_img('level3/box.png')
+    get_countdown_imgs('level1/start')
+    get_countdown_imgs('level2/start')
+    get_countdown_imgs('level3/start')
+    get_countdown_imgs('level1/end')
+    get_countdown_imgs('level2/end')
+    get_countdown_imgs('level3/end')
+
+    get_layout_img('rank/ranking.png')
+    get_layout_imgs('rank/press_a')
+
+
+walls = {}
+
+
+def load_wall(fname):
+    try:
+        img = get_map_img(fname)
+    except Exception:
+        return None
+    blank_color = house_settings['blank_color']
+
+    def is_wall(wi, hi):
+        return 0 if img.get_at((wi, hi)) == blank_color else 1
+    return [[is_wall(wi, hi) for hi in range(img.get_height())]
+                                for wi in range(img.get_width())]
+
+
+def get_wall(fname):
+    if fname not in walls:
+        walls[fname] = load_wall(fname)
+    return walls[fname]
+
+
+def load_all_walls():
+    get_wall('house/map.png')
+    get_wall('level1/player_map.png')
 
 
 def gen_pixels(img):
     for h in range(img.get_height()):
         for w in range(img.get_width()):
-            yield tuple(img.get_at((w,h)))
+            yield tuple(img.get_at((w, h)))
+
+
+def gen_available_imgs_fpath(excluded_fpaths=[]):
+    for i in range(1, 35):
+        fpath = os.path.join(IMAGES_DIR, 'pool/{:05d}.jpg'.format(i))
+        if fpath not in excluded_fpaths:
+            yield fpath
+
+    for i in range(g_var.player_idx):
+        player_name = 'Player-{:03d}'.format(i)
+        fpath = get_player_img_fpath(player_name)
+        if fpath not in excluded_fpaths:
+            yield fpath
+
+
+def get_available_imgs_fpath(num, excluded_fpaths=[]):
+    return list(random.sample(list(gen_available_imgs_fpath()), num))
