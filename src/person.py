@@ -80,33 +80,88 @@ class Person:
         self.vyd = sign(self.vy)
 
     def draw(self, viewbox_location, viewbox_area):
-        lx = self.x - viewbox_area.x
-        ly = self.y - viewbox_area.y
-        if lx > viewbox_area.width or lx + self.img.get_width() < 0:
+        area = viewbox_area
+
+        view_box = (
+            viewbox_area.x,
+            viewbox_area.y,
+            viewbox_area.x + viewbox_area.width,
+            viewbox_area.y + viewbox_area.height,
+        )
+
+        img_box = (
+            self.x,
+            self.y,
+            self.x + self.img.get_width(),
+            self.y + self.img.get_height(),
+        )
+
+        overlay_box = (
+            max(view_box[0], img_box[0]),
+            max(view_box[1], img_box[1]),
+            min(view_box[2], img_box[2]),
+            min(view_box[3], img_box[3]),
+        )
+
+        if overlay_box[0] >= overlay_box[2] or overlay_box[1] >= overlay_box[3]:
             return
-        if ly > viewbox_area.height or ly + self.img.get_height() < 0:
-            return
 
-        if lx < 0:
-            area_x = -lx
-            area_w = lx + self.img.get_width()
-        elif lx + self.img.get_width() > viewbox_area.width:
-            area_x = 0
-            area_w = self.img.get_width() - (viewbox_area.width - lx)
-        else:
-            area_x = 0
-            area_w = self.img.get_width()
+        surface_loc = (
+            overlay_box[0] - viewbox_area.x + viewbox_location.x,
+            overlay_box[1] - viewbox_area.y + viewbox_location.y,
+        )
 
-        if ly < 0:
-            area_y = -ly
-            area_h = ly + self.img.get_height()
-        elif ly + self.img.get_height() > viewbox_area.height:
-            area_y = 0
-            area_h = self.img.get_height() - (viewbox_area.height - ly)
-        else:
-            area_y = 0
-            area_h = self.img.get_height()
+        overlay_area = (
+            overlay_box[0] - self.x,
+            overlay_box[1] - self.y,
+            overlay_box[2] - overlay_box[0],
+            overlay_box[3] - overlay_box[1],
+        )
 
-        location = (viewbox_location.x + max(0, lx), viewbox_location.y + max(0, ly))
-        area = (area_x, area_y, area_w, area_h)
-        g_var.surface.blit(self.img, location, area)
+        g_var.surface.blit(self.img, surface_loc, overlay_area)
+
+        # # skip while all pixel of img is out of viewbox_area
+        # if self.x + self.img.get_width() < area.x:
+        #     return
+        # if self.x > area.x + area.width:
+        #     return
+        # if self.y + self.img.get_height() < area.y:
+        #     return
+        # if self.y > area.y + area.height:
+        #     return
+        # # get new_area which is a overlay of viewbox_area and img area
+        # if self.x < area.x:
+        #     new_area_x = area.x
+        #     new_area_w = self.x + self.img.get_width() - area.x
+        # elif self.x + self.img.get_width() > area.x + area.width:
+        #     new_area_x = self.x
+        #     new_area_w = (self.x + self.img.get_width()) - (area.x + area.width)
+        # else:
+        #     new_area_x = self.x
+        #     new_area_w = self.img.get_width()
+
+        # if self.y < area.y:
+        #     new_area_y = area.y
+        #     new_area_h = self.y + self.img.get_height() - area.y
+        # elif self.y + self.img.get_height() > area.y + area.height:
+        #     new_area_y = self.y
+        #     new_area_h = (self.y + self.img.get_height()) - (area.y + area.height)
+        # else:
+        #     new_area_y = self.y
+        #     new_area_h = self.img.get_height()
+
+        # # viewbox_loc
+        # loc = (
+        #     new_area_x - area.x + viewbox_location.x,
+        #     new_area_y - area.y + viewbox_location.y,
+        # )
+
+        # # img area by img viewpoint
+        # img_area = (
+        #     new_area_x - self.x,
+        #     new_area_y - self.y,
+        #     new_area_w,
+        #     new_area_h,
+        # )
+
+        # g_var.surface.blit(self.img, loc, img_area)
