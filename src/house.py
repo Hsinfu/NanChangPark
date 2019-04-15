@@ -351,6 +351,7 @@ class House:
             self.player.vyd = 0
 
     def next(self, keyboard):
+        self.frame_idx += 1
         self.game_clock.resume()
         self.game_clock.tick()
         if self.game_clock.time_left < 0:
