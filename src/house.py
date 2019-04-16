@@ -228,7 +228,7 @@ class House:
         imgs_fpath = get_available_imgs_fpath(len(ppl), self.ppl_imgs_fpath)
 
         for p, img_fpath in zip(ppl, imgs_fpath):
-            img = get_img(img_fpath)
+            img = get_img(img_fpath, tuple(house_settings['img_size']))
             if p['img_size'] is None:
                 w, h = None, None
             else:

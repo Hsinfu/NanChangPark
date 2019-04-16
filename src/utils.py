@@ -101,10 +101,14 @@ def load_img(fname, img_dir, size):
 
 
 imgs = {}
+people_imgs = {}
 
 
-def get_img(fpath):
-    return load_img(fpath, img_dir='', size=None)
+def get_img(fpath, size):
+    key = (fpath, size)
+    if key not in people_imgs:
+        people_imgs[key] = load_img(fpath, img_dir='', size=size)
+    return people_imgs[key]
 
 
 def get_player_img(player_name, size=tuple(house_settings['img_size'])):
