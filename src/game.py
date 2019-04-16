@@ -6,7 +6,7 @@ import g_var
 from keyboard import Keyboard
 from frame import Frame
 from record import Record
-from utils import upload_ig, get_layout_imgs, load_all_imgs, load_all_walls
+from utils import rm, upload_ig, get_layout_imgs, load_all_imgs, load_all_walls
 from constant import game_settings
 from stage import (
     WelcomeStage,
@@ -50,6 +50,7 @@ class Stages:
 
 class Game(Stages):
     def __init__(self, player_name):
+        rm(player_name)
         self.record = None
         self.player_name = player_name
         self.bg_frames = Frame(g_var.surface, get_layout_imgs('bg'))
