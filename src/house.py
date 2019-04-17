@@ -391,8 +391,8 @@ class House:
 
         for p in random.sample(not_rebound_ppl, n):
             if mt.direction == 'player':
-                target_x = self.player.x + self.player.img.get_width() / 2
-                target_y = self.player.y + self.player.img.get_height() / 2
+                target_x = self.player.x
+                target_y = self.player.y
             elif mt.direction == 'random':
                 map_size = house_settings['map_size']
                 target_x = random.random() * map_size.width
