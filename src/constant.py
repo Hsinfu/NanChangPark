@@ -28,7 +28,7 @@ game_settings = {
     'starting_scores': 100,
     'is_scanner_connected': True,  # or False
     'screen_size': SizeStyle(width=1440, height=810),
-    'instagram_img_center_area': AreaStyle(x=0, y=239, width=1276, height=1276),
+    'instagram_img_center_area': AreaStyle(x=0, y=0, width=1276, height=1276),
 }
 
 # layout
