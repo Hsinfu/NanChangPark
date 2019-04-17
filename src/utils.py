@@ -180,6 +180,8 @@ def load_all_imgs():
     get_layout_img('rank/ranking.png')
     get_layout_imgs('rank/press_a')
 
+    for img_fpath in gen_available_imgs_fpath():
+        get_img(img_fpath, tuple(house_settings['img_size']))
 
 walls = {}
 
