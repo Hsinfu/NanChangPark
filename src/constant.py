@@ -94,6 +94,7 @@ house_settings = {
     'map_size': SizeStyle(width=2575, height=2279),
     'img_size': SizeStyle(width=110, height=150),
     'step': 20,
+    'rebound_type': 'elastic_collision',  # 'normal'
     'blank_color': pg.Color(255, 255, 255, 255),
     'player_name_fontstyle': TextSytle(x=-29, y=-10, fontsize=25, color=pg.Color(255, 255, 255)),
     'player_name_rectstyle': AreaStyle(x=-32, y=-14, width=94, height=24),

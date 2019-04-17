@@ -10,7 +10,6 @@ from connection import Connection
 from constant import house_settings, AreaStyle
 from person import Person
 from utils import (
-    sign,
     get_img,
     get_map_img,
     get_player_img,
@@ -56,9 +55,7 @@ def is_intersect_map(p, wall):
                 if wall[wi][hi] == 1:
                     return True
             except Exception:
-                print('is_intersect_map', wi, hi)
-            # if wall[wi][hi] == 1:
-            #     return True
+                logger.error('Error: is_intersect_map wall[{}][{}] failed'.format(wi, hi))
     return False
 
 
@@ -75,46 +72,47 @@ def get_v_rebound(p1, p2):
         y_dist = p2.pre_y - p1.pre_y - p1.img.get_height()
 
     if x_dist < 0 and y_dist < 0:
-        print('Error: get_v_rebound both dist < 0')
-        # print('p1 (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p1.pre_x, p1.pre_y, p1.x, p1.y, p1.vx, p1.vy))
-        # print('p2 (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p2.pre_x, p2.pre_y, p2.x, p2.y, p2.vx, p2.vy))
+        logger.error('Error: get_v_rebound both dist < 0')
+        p1vxd = random.random() * 2 - 1
+        p1vyd = random.random() * 2 - 1
+        return p1vxd, -p1vxd, p1vyd, -p1vyd
+
+    if house_settings['rebound_type'] == 'elastic_collision':
+        return p2.vx, p1.vx, p2.vy, p1.vy
 
     if x_dist < 0:
-        return sign(p1.vx), sign(p2.vx), -1 * sign(p1.vy), -1 * sign(p2.vy)
+        return p1.vx, p2.vx, -p1.vy, -p2.vy
 
     if y_dist < 0:
-        return -1 * sign(p1.vx), -1 * sign(p2.vx), sign(p1.vy), sign(p2.vy)
+        return -p1.vx, -p2.vx, p1.vy, p2.vy
 
     x_step = abs(p1.vx - p2.vx)
     y_step = abs(p1.vy - p2.vy)
 
     if x_step == 0:
-        return sign(p1.vx), sign(p2.vx), -1 * sign(p1.vy), -1 * sign(p2.vy)
+        return p1.vx, p2.vx, -p1.vy, -p2.vy
     if y_step == 0:
-        return -1 * sign(p1.vx), -1 * sign(p2.vx), sign(p1.vy), sign(p2.vy)
+        return -p1.vx, -p2.vx, p1.vy, p2.vy
 
     x_time = x_dist / x_step
     y_time = y_dist / y_step
 
-    # print('get_v_rebound both dist >= 0')
-    # print('p1 (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p1.pre_x, p1.pre_y, p1.x, p1.y, p1.vx, p1.vy))
-    # print('p2 (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p2.pre_x, p2.pre_y, p2.x, p2.y, p2.vx, p2.vy))
     if x_time > y_time:
         if abs(p1.vx) > x_step:
-            return -1 * sign(p1.vx), sign(p2.vx), sign(p1.vy), sign(p2.vy)
+            return -p1.vx, p2.vx, p1.vy, p2.vy
         if abs(p2.vx) > x_step:
-            return sign(p1.vx), -1 * sign(p2.vx), sign(p1.vy), sign(p2.vy)
-        return -1 * sign(p1.vx), -1 * sign(p2.vx), sign(p1.vy), sign(p2.vy)
+            return p1.vx, -p2.vx, p1.vy, p2.vy
+        return -p1.vx, -p2.vx, p1.vy, p2.vy
 
     if abs(p1.vy) > y_step:
-        return sign(p1.vx), sign(p2.vx), -1 * sign(p1.vy), sign(p2.vy)
+        return p1.vx, p2.vx, -p1.vy, p2.vy
     if abs(p2.vy) > y_step:
-        return sign(p1.vx), sign(p2.vx), sign(p1.vy), -1 * sign(p2.vy)
-    return sign(p1.vx), sign(p2.vx), -1 * sign(p1.vy), -1 * sign(p2.vy)
+        return p1.vx, p2.vx, p1.vy, -p2.vy
+    return p1.vx, p2.vx, -p1.vy, -p2.vy
 
 
 def get_v_rebound_map(p, wall):
-    # print('p (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p.pre_x, p.pre_y, p.x, p.y, p.vx, p.vy))
+    logger.debug('p (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p.pre_x, p.pre_y, p.x, p.y, p.vx, p.vy))
 
     b = get_box(p)
 
@@ -142,8 +140,6 @@ def get_v_rebound_map(p, wall):
     x_collision = get_w_overlap('left') if p.vx > 0 else get_w_overlap('right')
     y_collision = get_h_overlap('bottom') if p.vy > 0 else get_h_overlap('top')
 
-    # print('collision', x_collision, y_collision)
-
     if p.vx > 0:
         x_dist = x_collision - (p.pre_x + p.img.get_width())
     else:
@@ -155,29 +151,29 @@ def get_v_rebound_map(p, wall):
         y_dist = p.pre_y - y_collision
 
     if x_dist < 0 and y_dist < 0:
-        print('both dist < 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}))'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist))
-        return -1 * sign(p.vx), -1 * sign(p.vy)
+        logger.error('both dist < 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}))'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist))
+        return -p.vx, -p.vy
 
     if x_dist < 0:
-        return sign(p.vx), -1 * sign(p.vy)
+        return p.vx, -p.vy
 
     if y_dist < 0:
-        return -1 * sign(p.vx), sign(p.vy)
+        return -p.vx, p.vy
 
     if p.vx == 0:
-        return 0, -1 * sign(p.vy)
+        return 0, -p.vy
 
     if p.vy == 0:
-        return -1 * sign(p.vx), 0
+        return -p.vx, 0
 
     x_time = x_dist / abs(p.vx)
     y_time = y_dist / abs(p.vy)
 
-    print('both dist >= 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}), time: ({}, {})'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist, x_time, y_time))
+    logger.warning('both dist >= 0 -> pre: ({}, {}), collision: ({}, {}), dist: ({}, {}), time: ({}, {})'.format(p.pre_x, p.pre_y, x_collision, y_collision, x_dist, y_dist, x_time, y_time))
 
     if x_time > y_time:
-        return -1 * sign(p.vx), sign(p.vy)
-    return sign(p.vx), -1 * sign(p.vy)
+        return -p.vx, p.vy
+    return p.vx, -p.vy
 
 
 class House:
@@ -408,8 +404,8 @@ class House:
         self.game_clock.tick()
         if self.game_clock.time_left < 0:
             return
-        self.move()
         self.load_people()
+        self.move()
         self.hit_rebound_people()
         self.hit_rebound_player()
         self.hit_rebound_wall()

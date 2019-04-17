@@ -79,7 +79,6 @@ class Connection:
                     yield (x, y)
 
             new_positions = list(gen())
-            # print('new_positions', new_positions)
 
             def merge_gen():
                 new_idx = 0
@@ -95,6 +94,5 @@ class Connection:
                     yield (p[0] - area.x + layout_location.x, p[1] - area.y + layout_location.y)
 
             final_positions = list(post_processing())
-            # print('final_positions', final_positions)
             line_widht = connection_settings['line_width']
             pg.draw.line(g_var.surface, c, final_positions[0], final_positions[1], line_widht)
