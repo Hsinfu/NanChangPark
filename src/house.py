@@ -7,7 +7,7 @@ import pygame as pg
 import g_var
 from clock import Clock
 from connection import Connection
-from constant import house_settings
+from constant import house_settings, AreaStyle
 from person import Person
 from utils import (
     sign,
@@ -23,6 +23,13 @@ logger = logging.getLogger(__name__)
 
 
 def get_box(p):
+    if type(p) == AreaStyle:
+        return {
+            'top': p.y + p.height,
+            'bottom': p.y,
+            'left': p.x,
+            'right': p.x + p.width,
+        }
     return {
         'top': p.y + p.img.get_height(),
         'bottom': p.y,
@@ -250,8 +257,8 @@ class House:
 
     def is_overley_player(self, p):
         if self.player is None:
-            return False
-        return is_intersect(self.player, p)
+            return is_intersect(p, house_settings['player_img_area'])
+        return is_intersect(p, self.player)
 
     def is_overlap_current_people(self, p):
         for pi in self.people:
