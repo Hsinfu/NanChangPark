@@ -84,7 +84,7 @@ class Connection:
             def merge_gen():
                 new_idx = 0
                 for p in positions:
-                    if p[0] >= area.x and p[0] <= area.x + area.width and p[1] => area.y and p[1] <= area.y + area.height:
+                    if p[0] >= area.x and p[0] <= area.x + area.width and p[1] >= area.y and p[1] <= area.y + area.height:
                         yield p
                     else:
                         yield new_positions[new_idx]
