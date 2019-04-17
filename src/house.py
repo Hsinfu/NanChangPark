@@ -1,6 +1,7 @@
 import copy
 import math
 import logging
+import random
 import pygame as pg
 
 import g_var
@@ -147,6 +148,12 @@ def get_v_rebound_map(p, wall):
     if y_dist < 0:
         return -1 * sign(p.vx), sign(p.vy)
 
+    if p.vx == 0:
+        return 0, -1 * sign(p.vy)
+
+    if p.vy == 0:
+        return -1 * sign(p.vx), 0
+
     x_time = x_dist / abs(p.vx)
     y_time = y_dist / abs(p.vy)
 
@@ -173,6 +180,7 @@ class House:
         self.delay_clock = None
         self.game_clock = Clock(self.house_setting['game_time'])
         self.add_person_max_retry = self.house_setting['add_person_max_retry']
+        self.move_type = self.house_setting['move_type']
         self.load_people()
         self.shake = False
 
@@ -356,6 +364,28 @@ class House:
         else:
             self.player.vyd = 0
 
+    def set_people_direction(self):
+        mt = self.house_setting['move_type']
+        if mt.delay_frames == 0 or self.frame_idx % mt.delay_frames != 0:
+            return
+        if mt.direction == 'normal':
+            return
+        not_rebound_ppl = list(filter(lambda p: not p.is_rebounded, self.people))
+        n = min(len(not_rebound_ppl), mt.num)
+
+        for p in random.sample(not_rebound_ppl, n):
+            if mt.direction == 'player':
+                target_x = self.player.x + self.player.img.get_width() / 2
+                target_y = self.player.y + self.player.img.get_height() / 2
+            elif mt.direction == 'random':
+                map_size = house_settings['map_size']
+                target_x = random.random() * map_size.width
+                target_y = random.random() * map_size.height
+            else:
+                logger.error('move_type Error')
+                raise Exception
+            p.set_step_target(target_x, target_y)
+
     def next(self, keyboard):
         self.frame_idx += 1
         self.game_clock.resume()
@@ -369,6 +399,7 @@ class House:
         self.hit_rebound_wall()
         self.set_delay_clock()
         self.set_player_dictection(keyboard)
+        self.set_people_direction()
         self.apply_rebound()
 
     def draw_bottom(self, layout_location, view_area):
@@ -381,4 +412,3 @@ class House:
         for p in self.people:
             p.draw(layout_location, view_area)
         self.connection.draw(layout_location, view_area)
-

@@ -56,12 +56,24 @@ class Person:
         self.pre_x = self.x
         self.pre_y = self.y
 
+    def normalize_step(self, vx, vy):
+        v = math.sqrt(vx * vx + vy * vy)
+        nvx = vx / v * self.step
+        nvy = vy / v * self.step
+        return nvx, nvy
+
     def init_step(self, init_vx=None, init_vy=None):
         random_vx, random_vy = self.random_step()
         self.vx = init_vx or random_vx
         self.vy = init_vy or random_vy
+        self.vx, self.vy = self.normalize_step(self.vy, self.vy)
         self.vxd = sign(self.vx)
         self.vyd = sign(self.vy)
+
+    def set_step_target(self, target_x=None, target_y=None):
+        vx = target_x - self.x if target_x else None
+        vy = target_y - self.y if target_y else None
+        self.init_step(vx, vy)
 
     @property
     def is_rebounded(self):

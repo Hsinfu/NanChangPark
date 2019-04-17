@@ -7,6 +7,8 @@ TextSytle = namedtuple('TextSytle', ['x', 'y', 'fontsize', 'color'])
 AreaStyle = namedtuple('AreaStyle', ['x', 'y', 'width', 'height'])
 LocationStyle = namedtuple('LocationStyle', ['x', 'y'])
 SizeStyle = namedtuple('SizeStyle', ['width', 'height'])
+MoveType = namedtuple('MoveType', ['delay_frames', 'num', 'direction'])
+
 
 ### Static Path
 VIRTUALENV = os.path.expanduser('~/.venv/NanChangPark/bin/python')
@@ -98,6 +100,7 @@ house_settings = {
     'level1': {
         'game_time': 30,  # 30 seconds
         'hit_delay': 0.3,  # 0.3 second
+        'move_type': MoveType(delay_frames=0, num=0, direction='normal'),
         'player_img_area': AreaStyle(x=1282, y=879, width=110, height=150),
         'add_person_max_retry': 1,
         'people': [
@@ -148,6 +151,7 @@ house_settings = {
     'level2': {
         'game_time': 30,  # 30 seconds
         'hit_delay': 0.3,  # 0.3 second
+        'move_type': MoveType(delay_frames=12, num=8, direction='player'),
         'player_img_area': AreaStyle(x=719, y=382, width=110, height=150),
         'add_person_max_retry': 100,
         'people': [
@@ -204,6 +208,7 @@ house_settings = {
     'level3': {
         'game_time': 30,  # 30 seconds
         'hit_delay': 0.3,  # 0.3 second
+        'move_type': MoveType(delay_frames=12, num=8, direction='random'),
         'player_img_area': AreaStyle(x=843, y=1650, width=110, height=150),
         'add_person_max_retry': 100,
         'people': [
