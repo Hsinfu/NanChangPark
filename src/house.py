@@ -100,7 +100,16 @@ def get_v_rebound(p1, p2):
     # print('p1 (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p1.pre_x, p1.pre_y, p1.x, p1.y, p1.vx, p1.vy))
     # print('p2 (pre_x: {}, pre_y: {}, x: {}, y: {}, vx: {}, vy: {})'.format(p2.pre_x, p2.pre_y, p2.x, p2.y, p2.vx, p2.vy))
     if x_time > y_time:
+        if abs(p1.vx) > x_step:
+            return -1 * sign(p1.vx), sign(p2.vx), sign(p1.vy), sign(p2.vy)
+        if abs(p2.vx) > x_step:
+            return sign(p1.vx), -1 * sign(p2.vx), sign(p1.vy), sign(p2.vy)
         return -1 * sign(p1.vx), -1 * sign(p2.vx), sign(p1.vy), sign(p2.vy)
+
+    if abs(p1.vy) > y_step:
+        return sign(p1.vx), sign(p2.vx), -1 * sign(p1.vy), sign(p2.vy)
+    if abs(p2.vy) > y_step:
+        return sign(p1.vx), sign(p2.vx), sign(p1.vy), -1 * sign(p2.vy)
     return sign(p1.vx), sign(p2.vx), -1 * sign(p1.vy), -1 * sign(p2.vy)
 
 
