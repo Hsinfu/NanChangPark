@@ -60,22 +60,22 @@ class Connection:
             def gen():
                 x = area.x
                 y = (1 - a * x) / b
-                if y > y_min and y < y_max:
+                if y > y_min and y < y_max and y > area.y and y < area.y + area.height:
                     yield (x, y)
 
                 x = area.x + area.width
                 y = (1 - a * x) / b
-                if y > y_min and y < y_max:
+                if y > y_min and y < y_max and y > area.y and y < area.y + area.height:
                     yield (x, y)
 
                 y = area.y
                 x = (1 - b * y) / a
-                if x > x_min and x < x_max:
+                if x > x_min and x < x_max and x > area.x and x < area.x + area.width:
                     yield (x, y)
 
                 y = area.y + area.height
                 x = (1 - b * y) / a
-                if x > x_min and x < x_max:
+                if x > x_min and x < x_max and x > area.x and x < area.x + area.width:
                     yield (x, y)
 
             new_positions = list(gen())
@@ -84,7 +84,7 @@ class Connection:
             def merge_gen():
                 new_idx = 0
                 for p in positions:
-                    if p[0] > area.x and p[0] < area.x + area.width and p[1] > area.y and p[1] < area.y + area.height:
+                    if p[0] >= area.x and p[0] <= area.x + area.width and p[1] => area.y and p[1] <= area.y + area.height:
                         yield p
                     else:
                         yield new_positions[new_idx]
