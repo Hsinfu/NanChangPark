@@ -230,4 +230,4 @@ def gen_available_imgs_fpath(excluded_fpaths=[]):
 
 
 def get_available_imgs_fpath(num, excluded_fpaths=[]):
-    return list(random.sample(list(gen_available_imgs_fpath()), num))
+    return list(random.sample(list(gen_available_imgs_fpath(excluded_fpaths)), num))
