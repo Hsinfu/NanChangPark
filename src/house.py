@@ -257,7 +257,7 @@ class House:
 
     def is_overley_player(self, p):
         if self.player is None:
-            return is_intersect(p, house_settings['player_img_area'])
+            return is_intersect(p, self.house_setting['player_img_area'])
         return is_intersect(p, self.player)
 
     def is_overlap_current_people(self, p):
