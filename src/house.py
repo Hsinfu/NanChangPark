@@ -410,8 +410,8 @@ class House:
             return
         self.move()
         self.load_people()
-        self.hit_rebound_player()
         self.hit_rebound_people()
+        self.hit_rebound_player()
         self.hit_rebound_wall()
         self.set_delay_clock()
         self.set_player_dictection(keyboard)
