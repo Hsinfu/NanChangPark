@@ -222,11 +222,15 @@ def gen_available_imgs_fpath(excluded_fpaths=[]):
         if fpath not in excluded_fpaths:
             yield fpath
 
+    df = g_var.records.df
     for i in range(g_var.player_idx):
         player_name = 'Player-{:03d}'.format(i)
         fpath = get_player_img_fpath(player_name)
-        if fpath not in excluded_fpaths:
-            yield fpath
+        if fpath in excluded_fpaths:
+            continue
+        if int(df.loc[df['name'] == player_name]['score']) > game_settings['starting_scores']:
+            continue
+        yield fpath
 
 
 def get_available_imgs_fpath(num, excluded_fpaths=[]):
