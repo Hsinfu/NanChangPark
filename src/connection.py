@@ -26,7 +26,8 @@ class Connection:
         """
         colors = p1.img_colors.intersection(p2.img_colors)
         num = int(random.randrange(max_num))
-        for c in random.sample(colors, num):
+        n = min(len(colors), num)
+        for c in random.sample(colors, n):
             p1_coord = self.get_img_color_idx(p1.img, c)
             p2_coord = self.get_img_color_idx(p2.img, c)
             n = self.connect_num.get((p1, p2), 0)
