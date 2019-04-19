@@ -217,16 +217,17 @@ def gen_pixels(img):
 
 
 def gen_available_imgs_fpath(excluded_fpaths=[]):
+    ex_fps = set(excluded_fpaths)
     for i in range(1, 35):
         fpath = os.path.join(IMAGES_DIR, 'pool/{:05d}.jpg'.format(i))
-        if fpath not in excluded_fpaths:
+        if fpath not in ex_fps:
             yield fpath
 
     df = g_var.records.df
     for i in range(g_var.player_idx):
         player_name = 'Player-{:03d}'.format(i)
         fpath = get_player_img_fpath(player_name)
-        if fpath in excluded_fpaths:
+        if fpath in ex_fps:
             continue
         if len(df) == 0:
             continue
@@ -238,5 +239,10 @@ def gen_available_imgs_fpath(excluded_fpaths=[]):
         yield fpath
 
 
+available_imgs_fpaths = {}
+
+
 def get_available_imgs_fpath(num, excluded_fpaths=[]):
-    return list(random.sample(list(gen_available_imgs_fpath(excluded_fpaths)), num))
+    if g_var.player_idx not in available_imgs_fpaths:
+        available_imgs_fpaths[g_var.player_idx] = list(gen_available_imgs_fpath(excluded_fpaths))
+    return list(random.sample(available_imgs_fpaths[g_var.player_idx], num))
