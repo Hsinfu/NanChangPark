@@ -51,7 +51,7 @@ def get_player_ig_img_fpath(player_name):
 
 def cp(player_name):
     i = random.randrange(1, 8)
-    f = '{}/man{:02d}.png'.format(CP_SOURCES_DIR, i)
+    f = '{}/{:05d}.jpg'.format(CP_SOURCES_DIR, i)
     command_line('cp -f {} {}'.format(f, get_player_img_fpath(player_name)))
 
 
