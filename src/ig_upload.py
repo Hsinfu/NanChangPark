@@ -1,5 +1,6 @@
 import argparse
 import json
+import time
 from InstagramAPI import InstagramAPI
 from constant import INSTAGRAM_ACCOUNT_PATH
 
@@ -17,8 +18,13 @@ class InstagramUploader:
             self._api.login()
         return self._api
 
-    def upload_photo(self, photo_path, caption):
+    def upload_photo(self, photo_path, caption, max_retry=10):
+        if max_retry == 0:
+            return
         self.api.uploadPhoto(photo_path, caption=caption)
+        if self.api.LastJson.get('status', None) != 'ok':
+            time.sleep(20)
+            self.upload_photo(photo_path, caption, max_retry - 1)
 
 
 def _parse_arguments():
