@@ -129,7 +129,7 @@ class RankGame:
 
     @property
     def player_idx(self):
-        return len(g_var.records.df)
+        return len(g_var.records.df) + game_settings['start_player_idx']
 
     @property
     def player_name(self):
@@ -215,6 +215,9 @@ def main():
 
     # init records
     g_var.records = Record()
+
+    # init player_idx
+    g_var.player_idx = game_settings['start_player_idx']
 
     # init RankGame
     rank_game = RankGame()
