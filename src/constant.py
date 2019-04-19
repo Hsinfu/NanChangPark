@@ -28,7 +28,7 @@ game_settings = {
     'game_title': 'NanChangPark Never Lock',
     'frame_rate': 24,
     'starting_scores': 100,
-    'start_player_idx': 57,
+    'start_player_idx': 131,
     'is_scanner_connected': True,  # or False
     'screen_size': SizeStyle(width=1440, height=810),
     'instagram_img_center_area': AreaStyle(x=0, y=0, width=1276, height=1276),
