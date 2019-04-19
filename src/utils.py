@@ -228,7 +228,12 @@ def gen_available_imgs_fpath(excluded_fpaths=[]):
         fpath = get_player_img_fpath(player_name)
         if fpath in excluded_fpaths:
             continue
-        if int(df.loc[df['name'] == player_name]['score']) > game_settings['starting_scores']:
+        if len(df) == 0:
+            continue
+        record = df.loc[df['name'] == player_name]
+        if len(record) == 0:
+            continue
+        if int(record['score']) > game_settings['starting_scores']:
             continue
         yield fpath
 
